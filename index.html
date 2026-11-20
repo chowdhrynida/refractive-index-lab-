@@ -1,0 +1,1676 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Refractive Index Virtual Lab</title>
+<style>
+:root{--bg:#0e1a22;--card:#15252f;--card2:#1c303c;--line:#2b4452;--tx:#e9f0ee;--mut:#93aab0;--red:#ff6b6b;--acc:#35c2b0;--acc2:#e9b872;--ok:#6ee7a8;--warn:#f3c477;--bad:#f58a8a;--ink:#0a1a1c}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:radial-gradient(1200px 600px at 15% -10%,#17323a 0%,transparent 60%),radial-gradient(900px 500px at 100% 0%,#2a2a22 0%,transparent 55%),var(--bg);background-attachment:fixed;color:var(--tx);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:60px}
+main{padding:0 14px;max-width:1000px;margin:0 auto}
+h1,h2,h3{margin:0;font-family:Georgia,'Times New Roman',serif;letter-spacing:.01em}
+.topbar{position:sticky;top:0;z-index:20;background:rgba(14,26,34,.93);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.topin{max-width:1000px;margin:0 auto;padding:8px 14px}
+.who{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--mut);margin-bottom:6px}
+.who b{color:var(--tx)}
+.steps{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.stp{flex:1;min-width:92px;background:var(--card);border:1px solid var(--line);color:var(--mut);border-radius:9px;padding:6px 8px;font-size:12px;cursor:pointer;font-family:inherit;text-align:left;line-height:1.25}
+.stp b{display:block;font-size:11px;color:var(--mut);font-weight:600}
+.stp.on{border-color:var(--acc);background:#16413f;color:var(--tx)}
+.stp.done{border-color:#3d8b6c;color:#c4f1dc}
+.stp:disabled{opacity:.4;cursor:not-allowed}
+.card{background:linear-gradient(180deg,#183039,var(--card));border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.card h3{font-size:15px;margin-bottom:8px}
+.card h2{font-size:18px;margin-bottom:8px}
+.note{font-size:12.5px;color:var(--mut);margin-top:6px}
+.warn{color:var(--warn)}.good{color:var(--ok)}.bad{color:var(--bad)}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+button.b{background:#21394a;color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:9px 13px;font-size:13.5px;cursor:pointer;font-weight:600;font-family:inherit}
+button.b.p{background:linear-gradient(180deg,#46d3c0,#26a999);border-color:#26a999;color:var(--ink)}
+button.b:active{transform:scale(.97)}
+button.b:disabled{opacity:.45;cursor:not-allowed}
+.rd{background:#0f1f28;border:1px dashed #3f6070;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:13.5px}
+.rd b{color:var(--acc2)}
+.cv{width:100%;border-radius:8px;overflow:hidden;background:#05070b;border:1px solid var(--line)}
+canvas{display:block}
+input[type=text],input[type=number],input[type=date],select,textarea{background:var(--card2);color:var(--tx);border:1px solid var(--line);border-radius:8px;padding:9px;font-size:14px;font-family:inherit;max-width:100%}
+input.n{width:92px}
+input.ok,select.ok{border-color:#3d8b6c;background:#123a2a}
+input.no{border-color:#9a3b3b;background:#2a1517}
+textarea{width:100%;min-height:90px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--mut)}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right}
+th{color:var(--mut);font-weight:600;font-size:12px}
+td:first-child,th:first-child,td.l,th.l{text-align:left}
+td button.x{background:none;border:none;color:var(--red);cursor:pointer;font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);color:var(--tx);border-radius:999px;padding:5px 11px;font-size:12.5px;font-family:inherit}
+.chip i{width:11px;height:11px;border-radius:50%;display:inline-block;border:1px solid rgba(255,255,255,.35)}
+.chip.ok{border-color:#3d8b6c;color:#c4f1dc}.chip.no{color:var(--mut)}
+.f{font-family:ui-monospace,Menlo,Consolas,monospace;background:#0f1f28;border:1px solid var(--line);border-radius:6px;padding:7px 9px;display:block;margin:8px 0;font-size:13.5px;color:#f4dcae;overflow-x:auto}
+
+/* cover */
+.cover{text-align:center;padding:26px 14px}
+.cover .tag{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--acc2)}
+.cover h1{font-size:28px;background:linear-gradient(90deg,#9ff0e2,#f4dcae);-webkit-background-clip:text;background-clip:text;color:transparent;margin:10px 0 4px;line-height:1.25}
+.cover .sub{color:var(--mut);margin-bottom:18px}
+.formbox{max-width:440px;margin:0 auto;text-align:left;display:flex;flex-direction:column;gap:12px}
+.flow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:18px 0 0}
+.flow span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--mut)}
+
+/* manual */
+.man h3{margin-top:18px;color:var(--acc2);font-size:15.5px;border-bottom:1px solid var(--line);padding-bottom:3px}
+.man p,.man li{color:#d4dbe8;font-size:14.5px}
+.man ol{padding-left:22px}
+.man ol li{margin:6px 0}
+.figs{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin:10px 0}
+.fig{background:#0f1f28;border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}
+.fig svg{width:100%;height:auto}
+.fig figcaption{font-size:12px;color:var(--mut);margin-top:4px}
+.q{background:#0f1f28;border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0}
+.q p{margin:0 0 6px;font-weight:600}
+.q label{display:block;padding:4px 0;cursor:pointer;font-size:14px}
+.q .fb{font-size:12.5px;margin-top:4px}
+
+/* lab */
+.view3d{position:relative;height:clamp(400px,66vh,680px);border-radius:10px;overflow:hidden;background:#0a0d14;border:1px solid var(--line)}
+#gl{width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+.hudtop{position:absolute;left:8px;top:8px;display:flex;gap:6px;flex-wrap:wrap;pointer-events:none}
+.hudtop .chip{background:rgba(15,20,30,.82);font-size:12px;padding:4px 9px}
+.hudcam{position:absolute;right:8px;bottom:8px;display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;max-width:100%}
+.hudcam button{background:rgba(15,20,30,.82);color:var(--tx);border:1px solid var(--line);border-radius:7px;padding:5px 9px;font-size:12px;cursor:pointer;font-family:inherit}
+.nogl{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;background:#0a0d14;color:var(--warn)}
+#cvC2{touch-action:none;cursor:crosshair}
+.obsform{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));align-items:end}
+.obsform input,.obsform select{width:100%}
+.track{display:grid;gap:6px;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.track div{border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12.5px;color:var(--mut);background:#0f1f28}
+.track div.ok{border-color:#3d8b6c;color:#c4f1dc}
+
+/* graph */
+#cvG{cursor:crosshair;touch-action:none;background:#fffdf4}
+.ptl{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.ptl span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 9px;color:var(--mut)}
+.ptl span.done{border-color:#3d8b6c;color:#c4f1dc}
+.ptl span.cur{border-color:var(--acc);color:#fff;background:#16413f}
+
+/* report */
+#report{display:none}
+.rep{background:#fff;color:#111;padding:22px;font-family:Georgia,serif;font-size:13px;line-height:1.45}
+.rep h1{font-size:19px;text-align:center;margin-bottom:4px}
+.rep h2{font-size:14px;margin:14px 0 4px;border-bottom:1px solid #999;break-after:avoid}.rep img,.rep table{break-inside:avoid}
+.rep table{font-size:11.5px}
+.rep th,.rep td{border:1px solid #888;padding:3px 6px;text-align:center;color:#111}
+.rep img{max-width:100%;border:1px solid #888;margin:6px 0}
+@media print{
+  body>*:not(#report){display:none!important}
+  #report{display:block!important}
+  body{background:#fff;padding:0}
+}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--acc);outline-offset:1px}
+th{color:var(--acc2)}
+.errgrid th,.errgrid td{font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="topbar" id="topbar" hidden>
+  <div class="topin">
+    <div class="who"><span>Student: <b id="whoName"></b> <span id="whoCls"></span></span><span id="whoDate"></span></div>
+    <div class="steps" id="steps"></div>
+  </div>
+</div>
+<main>
+
+<!-- ================= STAGE 0 : COVER ================= -->
+<section id="s0">
+  <div class="card cover">
+    <div class="tag">UG Physics · Virtual Laboratory</div>
+    <h1>Measurement of Refractive Index of a Liquid using LASER</h1>
+    <div class="sub">LASER board (total internal reflection) method</div>
+    <div class="formbox">
+      <label class="f">Student name *<input type="text" id="inName" placeholder="Enter your full name" autocomplete="name"></label>
+      <label class="f">Roll no. / Class (optional)<input type="text" id="inCls" placeholder="e.g. B.Sc. II · Roll 24"></label>
+      <label class="f">Date<input type="date" id="inDate"></label>
+      <button class="b p" id="bStart" disabled>Start experiment →</button>
+      <div class="note" id="startNote">Enter your name to continue.</div>
+    </div>
+    <div class="flow"><span>1 · Read the manual</span><span>2 · Pre-lab quiz</span><span>3 · Lab readings</span><span>4 · Calculations</span><span>5 · Graph</span><span>6 · Error analysis</span><span>7 · Result &amp; Report</span></div>
+  </div>
+</section>
+
+<!-- ================= STAGE 1 : MANUAL ================= -->
+<section id="s1" hidden>
+  <div class="card man">
+    <h2>Lab Manual</h2>
+    <div class="note">Read the whole manual carefully. A pre-lab quiz is given below; you can enter the lab only after passing it.</div>
+    <h3 style="margin-top:12px;font-size:18px;text-align:center;border:0">Measurement of Refractive Index of Liquid using LASER</h3>
+
+    <h3>Aim</h3>
+    <p>To determine the refractive index of the given liquid using the LASER board method.</p>
+
+    <h3>Apparatus</h3>
+    <p>LASER board (porcelain container), He-Ne LASER, vernier callipers, given liquid.</p>
+
+    <h3>Theory</h3>
+    <p>This experiment works on the principle of <b>total internal reflection</b>. Fig (a) shows refraction of a ray of light travelling from a denser medium (say a liquid) to a rarer medium (say air). The ray bends away from the normal, so the angle of refraction <i>r</i> is greater than the angle of incidence <i>i</i>. If we keep on increasing <i>i</i>, at some point the angle <i>r</i> will reach 90° (parallel to the boundary). If <i>i</i> is increased beyond this point, the ray can no longer be refracted and is reflected back into the same medium (here, the liquid) with the angle of reflection equal to the angle of incidence.</p>
+    <p>For ordinary refraction from liquid to air, the angles of incidence and refraction are related by Snell's law:</p>
+    <span class="f">μ = sin r / sin i  … (1)</span>
+    <p>where μ is the refractive index of the liquid with respect to air. If we define the <b>critical angle i<sub>c</sub></b> as the angle of incidence beyond which total internal reflection occurs, then r = 90° and eq. (1) becomes</p>
+    <span class="f">μ = sin 90° / sin i<sub>c</sub> = 1 / sin i<sub>c</sub></span>
+    <p>So if the angle i<sub>c</sub> is known, we can directly find the refractive index of the liquid. The critical angle can be determined experimentally using a simple arrangement of a LASER beam and a liquid container with a scattering bottom. If a porcelain container (LASER board) is used, its white bottom acts as an excellent scatterer. The arrangement is shown in Fig (b).</p>
+    <p>When the LASER beam is incident on the bottom, it scatters light in all directions. This results in a <b>dark circle</b> being formed at the centre. This can be explained using Fig (c): of all the light rays scattered towards the surface, those incident on the surface at an angle less than i<sub>c</sub> are refracted out and are not reflected back. Since no light is reflected back to the bottom for these angles, the region near the scattering centre is not illuminated and appears dark. Beyond the angle i<sub>c</sub>, all rays are totally internally reflected back to the bottom, making this region appear bright. From the geometry of Fig (c) we can write</p>
+    <span class="f">i_c = tan⁻¹( (R/2) / h )</span>
+    <p>The radius of the dark circle can be determined by placing a graph paper at the bottom of the container, with a small hole at the centre of the sheet for the scattering centre. The height <i>h</i> of the liquid from the bottom can be measured accurately using the vernier callipers.</p>
+
+    <div class="figs">
+      <figure class="fig"><svg viewBox="0 0 320 210" aria-label="Fig a">
+        <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#ff8d8d"/></marker></defs>
+        <line x1="20" y1="105" x2="300" y2="105" stroke="#93a0b5" stroke-width="1.5"/>
+        <line x1="160" y1="15" x2="160" y2="195" stroke="#93a0b5" stroke-dasharray="5 4"/>
+        <line x1="70" y1="175" x2="158" y2="107" stroke="#ff8d8d" stroke-width="2.2" marker-end="url(#ar)"/>
+        <line x1="160" y1="105" x2="262" y2="58" stroke="#ff8d8d" stroke-width="2.2" marker-end="url(#ar)"/>
+        <path d="M160,140 A35,35 0 0 0 138,133" fill="none" stroke="#fbbf24"/><text x="144" y="152" fill="#fbbf24" font-size="13">i</text>
+        <path d="M160,72 A33,33 0 0 1 190,86" fill="none" stroke="#fbbf24"/><text x="176" y="68" fill="#fbbf24" font-size="13">r</text>
+        <text x="166" y="22" fill="#c9d2e0" font-size="11">Normal</text><text x="30" y="98" fill="#c9d2e0" font-size="11">Boundary</text>
+        <text x="236" y="30" fill="#c9d2e0" font-size="11">Ray</text><text x="232" y="90" fill="#93c5fd" font-size="12">[air]</text><text x="232" y="150" fill="#93c5fd" font-size="12">[liquid]</text>
+      </svg><figcaption>Fig (a): refraction from liquid to air (r &gt; i)</figcaption></figure>
+
+      <figure class="fig"><svg viewBox="0 0 320 210" aria-label="Fig b">
+        <line x1="10" y1="22" x2="150" y2="22" stroke="#ff4b4b" stroke-width="2"/><text x="14" y="14" fill="#c9d2e0" font-size="11">Laser beam</text>
+        <line x1="140" y1="32" x2="160" y2="12" stroke="#9fb4d6" stroke-width="4"/><text x="168" y="14" fill="#c9d2e0" font-size="11">Mirror</text>
+        <line x1="150" y1="22" x2="150" y2="170" stroke="#ff4b4b" stroke-width="2"/>
+        <path d="M40,95 L260,95 L240,175 Q150,195 60,175 Z" fill="none" stroke="#cfc8b6" stroke-width="2.5"/>
+        <path d="M46,120 L254,120 L240,175 Q150,195 60,175 Z" fill="rgba(90,160,255,.28)" stroke="none"/>
+        <line x1="46" y1="120" x2="254" y2="120" stroke="#93c5fd"/>
+        <ellipse cx="150" cy="176" rx="38" ry="7" fill="#05070b" stroke="#fbbf24"/>
+        <circle cx="150" cy="176" r="3" fill="#ff4b4b"/>
+        <text x="30" y="132" fill="#93c5fd" font-size="11">Liquid</text>
+        <text x="190" y="62" fill="#c9d2e0" font-size="11">Porcelain vessel</text><text x="190" y="74" fill="#c9d2e0" font-size="11">(scattering bottom)</text>
+        <text x="196" y="204" fill="#fbbf24" font-size="11">Dark ring</text><text x="22" y="190" fill="#c9d2e0" font-size="11">Bright surface</text>
+      </svg><figcaption>Fig (b): LASER board arrangement</figcaption></figure>
+
+      <figure class="fig"><svg viewBox="0 0 320 210" aria-label="Fig c">
+        <line x1="20" y1="35" x2="300" y2="35" stroke="#93c5fd" stroke-width="1.8"/><text x="200" y="26" fill="#c9d2e0" font-size="11">Air–liquid boundary</text>
+        <line x1="150" y1="35" x2="150" y2="168" stroke="#93a0b5" stroke-dasharray="5 4"/>
+        <line x1="150" y1="168" x2="84" y2="35" stroke="#fbbf24" stroke-width="2"/><line x1="150" y1="168" x2="216" y2="35" stroke="#fbbf24" stroke-width="2"/>
+        <line x1="84" y1="35" x2="18" y2="168" stroke="#ff8d8d" stroke-width="1.6"/><line x1="216" y1="35" x2="282" y2="168" stroke="#ff8d8d" stroke-width="1.6"/>
+        <ellipse cx="150" cy="170" rx="132" ry="14" fill="none" stroke="#cfc8b6"/>
+        <circle cx="150" cy="168" r="4" fill="#ff4b4b"/><text x="108" y="196" fill="#c9d2e0" font-size="11">Scattering centre (laser spot)</text>
+        <path d="M150,138 A30,30 0 0 0 130,141" fill="none" stroke="#fbbf24"/><text x="118" y="132" fill="#fbbf24" font-size="12">i_c</text>
+        <text x="156" y="108" fill="#c9d2e0" font-size="12">h</text>
+        <line x1="150" y1="180" x2="282" y2="180" stroke="#8aa0c0"/><text x="206" y="178" fill="#c9d2e0" font-size="12">R</text>
+        <line x1="150" y1="44" x2="216" y2="44" stroke="#8aa0c0"/><text x="176" y="58" fill="#c9d2e0" font-size="12">R/2</text>
+      </svg><figcaption>Fig (c): geometry of the dark circle (rays reach the surface at i<sub>c</sub> after travelling R/2 horizontally; the TIR ray returns to the bottom at distance R)</figcaption></figure>
+    </div>
+
+    <h3>Formula</h3>
+    <ol>
+      <li>Critical angle &nbsp; <b>i<sub>c</sub> = tan⁻¹( R / 2h ) = tan⁻¹( D / 4h )</b>, &nbsp; where D is the diameter of the dark circle (D = 2R).</li>
+      <li>Refractive index &nbsp; <b>μ = 1 / sin i<sub>c</sub></b></li>
+    </ol>
+
+    <h3>Error analysis (uncertainty)</h3>
+    <p>Every measurement has an uncertainty. Here <b>Δh = 0.01 cm</b> (least count of the vernier) and <b>ΔR</b> is the uncertainty in reading R from the loupe grid (the grid is in 1 mm divisions and the edge of the dark circle is slightly diffuse, so you may estimate R to a fraction of a division). Since sin i<sub>c</sub> = R / √(R² + 4h²), we have μ = √(1 + 4h²/R²), and combining the errors in quadrature gives</p>
+    <span class="f">Δμ = ((μ² − 1) / μ) · √[ (Δh/h)² + (ΔR/R)² ]</span>
+    <p>For the graph, draw the steepest and the flattest line through the origin that still passes through the error bars (R ± ΔR) of every point:</p>
+    <span class="f">S<sub>max</sub> = min[(R<sub>i</sub> + ΔR)/h<sub>i</sub>] &nbsp;;&nbsp; S<sub>min</sub> = max[(R<sub>i</sub> − ΔR)/h<sub>i</sub>] &nbsp;;&nbsp; μ(S) = √(1 + 4/S²) &nbsp;;&nbsp; Δμ<sub>graph</sub> = |μ(S<sub>min</sub>) − μ(S<sub>max</sub>)| / 2</span>
+    <p>Finally report <b>μ = μ̄ ± Δμ̄</b> and the percentage uncertainty = (Δμ̄ / μ̄) × 100, where Δμ̄ is the mean of the Δμ values of the individual readings. The standard deviation (SD) of your μ values tells you how well the readings agree with each other.</p>
+
+    <h3>Procedure</h3>
+    <ol>
+      <li>Arrange the apparatus as shown in Fig (b).</li>
+      <li>The height <b>h</b> of the liquid is determined using the vernier callipers.</li>
+      <li>The radius <b>R</b> of the dark circle is read off along the two directions (ruling on the graph paper) and the mean radius is determined.</li>
+      <li>Repeat steps 2 and 3 for different heights of the liquid level.</li>
+      <li>The liquid (here, water) is replaced by another liquid (salt water / paraffin oil) and the experiment is repeated.</li>
+    </ol>
+
+    <h3>Observation table (format)</h3>
+    <div class="tw"><table><tr><th class="l">S.No.</th><th>Liquid</th><th>h (cm)</th><th>R₁ (cm)</th><th>R₂ (cm)</th><th>R = (R₁+R₂)/2 (cm)</th><th>i<sub>c</sub> = tan⁻¹(R/2h)</th><th>μ = 1/sin i<sub>c</sub></th></tr></table></div>
+    <div class="note">For the vernier callipers: h = MSR + (VSD × L.C.), where L.C. = 1 MSD − 1 VSD = 0.01 cm.</div>
+
+    <h3>Precautions</h3>
+    <ol>
+      <li>Never look directly into the LASER beam and never point it towards anyone's face.</li>
+      <li>Before changing the liquid, empty the container and wipe it clean with tissue; otherwise the liquids mix and μ will come out wrong.</li>
+      <li>Make the beam fall exactly on the hole (scattering centre) of the graph paper.</li>
+      <li>Read the edge of the dark circle carefully with the magnifier/loupe, and read the vernier carefully.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>Pre-lab check (5 questions)</h3>
+    <div id="quiz"></div>
+    <div class="btns"><button class="b" id="bQuiz">Check answers</button><span id="quizRes" class="note"></span></div>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px"><input type="checkbox" id="chkRead"> I have read the whole manual.</label>
+    <div class="btns"><button class="b p" id="bToLab" disabled>Go to the lab →</button></div>
+    <div class="note" id="labNote">To enter the lab: score at least 4/5 in the quiz and tick "I have read the manual".</div>
+  </div>
+</section>
+
+<!-- ================= STAGE 2 : LAB ================= -->
+<section id="s2" hidden>
+  <div class="card">
+    <h3>Procedure tracker</h3>
+    <div class="track" id="track"></div>
+  </div>
+
+  <div class="card">
+    <h3>① Apparatus: pick a liquid from the shelf and pour it into the container</h3>
+    <div class="view3d" id="view3d">
+      <canvas id="gl"></canvas>
+      <div class="hudtop"><span class="chip" id="hand">In hand: —</span><span class="chip" id="lvl">Level ≈ 0.00 cm</span></div>
+      <div class="hudcam" id="camBtns">
+        <button data-v="over">Overview</button><button data-v="shelf">Shelf</button><button data-v="cont">Container</button><button data-v="top">Top view</button>
+      </div>
+      <div class="nogl" id="nogl" hidden>WebGL is not available on this device/browser, so the 3D scene cannot run. Open this page in an up-to-date Chrome / Edge / Safari.</div>
+    </div>
+    <p class="note" style="margin:6px 0">Drag to rotate · scroll / pinch to zoom · grab a <b>bottle</b> and take it over the container (it tilts and pours) · click the <b>tissue box</b> and the <b>red bucket</b> (wipe / drain). The liquid level is not shown as a number — you must measure h with the vernier.</p>
+    <div class="btns">
+      <select id="selLiq"></select>
+      <button class="b" id="bHold">Hold to pour</button>
+      <button class="b" id="tDropP">Dropper +0.1 cm</button>
+      <button class="b" id="tDropM">Dropper −0.1 cm</button>
+      <button class="b" id="tDrain">Tip container (drain)</button>
+      <button class="b" id="tWipe">Tissue</button>
+    </div>
+    <label class="note" style="display:block;margin-top:8px"><input type="checkbox" id="chkRays"> Concept view: show the critical cone (keep it off while taking readings)</label>
+    <div class="rd" id="msgC">Pick up a bottle from the shelf.</div>
+  </div>
+
+  <div class="card">
+    <h3>② Measure h with the vernier callipers (depth probe)</h3>
+    <div class="btns" style="margin-top:0">
+      <button class="b" id="bVm10">◀◀ 1 mm</button><button class="b" id="bVm1">◀ 0.1 mm</button>
+      <input type="range" id="vSlide" min="0" max="600" step="1" value="0" style="flex:1;min-width:140px;accent-color:#35c2b0">
+      <button class="b" id="bVp1">0.1 mm ▶</button><button class="b" id="bVp10">1 mm ▶▶</button>
+    </div>
+    <div class="btns"><button class="b p" id="bMeas">Tighten the lock screw & read h</button><button class="b" id="bVhint">Hint: show MSR/VSD</button>
+      <label class="note" style="display:flex;gap:8px;align-items:center;margin:0">Magnifier <input type="range" id="vZoom" min="6" max="24" step="1" value="12" style="width:120px;accent-color:#e9b872"></label>
+      <span class="note">rod length: <b id="vVal">0.00 cm</b></span></div>
+    <div class="cv" style="margin-top:8px"><canvas id="cvV2"></canvas></div>
+    <div class="rd" id="rdV">Pour the liquid first, then press "measure h". Read the MSR and VSD yourself.</div>
+    <div class="note">L.C. = 0.01 cm. h = MSR + VSD × L.C. (MSR = the main-scale line just before the vernier zero; VSD = the vernier division that coincides with a main-scale line.)</div>
+  </div>
+
+  <div class="card">
+    <h3>③ Read the radius of the dark circle on the graph paper</h3>
+    <div class="note" style="margin:0 0 6px">Step 1 (alignment): the red beam spot must fall on the hole (black dot, white ring) — adjust it with the mirror knobs.</div>
+    <div class="grid">
+      <label class="f">Mirror knob · left ⟷ right <b id="vBx" style="color:var(--tx)">0.00</b><input type="range" id="sBx" min="-1.5" max="1.5" step="0.05" value="0"></label>
+      <label class="f">Mirror knob · forward ⟷ back <b id="vBy" style="color:var(--tx)">0.00</b><input type="range" id="sBy" min="-1.5" max="1.5" step="0.05" value="0"></label>
+    </div>
+    <div class="rd" id="rdBeam"></div>
+    <div class="cv" style="margin-top:8px"><canvas id="cvC2"></canvas></div>
+    <div class="note">Tap/drag on the graph paper — the loupe (magnifier) below shows that spot enlarged. Read the edge using the loupe's mm grid. The radius is the distance <b>from the hole</b> to the edge of the dark circle: R₁ along the x-axis (right), R₂ along the y-axis (up).</div>
+    <div class="cv" style="margin-top:6px"><canvas id="cvM2"></canvas></div>
+    <div class="btns">
+      <button class="b" id="bLensX">Loupe → edge on +x axis</button>
+      <button class="b" id="bLensY">Loupe → edge on +y axis</button>
+      <label class="note" style="display:flex;gap:8px;align-items:center">Zoom <input type="range" id="sMag" min="50" max="200" step="5" value="95" style="width:120px"></label>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>④ Observation table — write your own readings</h3>
+    <div class="obsform">
+      <label class="f">Liquid<select id="oLiq"></select></label>
+      <label class="f">MSR (mm)<input type="number" id="oMSR" step="1" inputmode="numeric"></label>
+      <label class="f">VSD<input type="number" id="oVSD" step="1" min="0" max="10" inputmode="numeric"></label>
+      <label class="f">h (cm)<input type="number" id="oH" step="0.01" inputmode="decimal"></label>
+      <label class="f">R₁ (cm), x-dir<input type="number" id="oR1" step="0.05" inputmode="decimal"></label>
+      <label class="f">R₂ (cm), y-dir<input type="number" id="oR2" step="0.05" inputmode="decimal"></label>
+    </div>
+    <div class="btns"><button class="b p" id="bAdd">Record reading in table</button></div>
+    <div class="rd" id="msgR">Enter the readings (h and R) and record them. The table stores exactly what you type; the lab assistant only checks it.</div>
+    <div class="tw" style="margin-top:10px" id="tabObs"></div>
+    <div class="btns"><button class="b p" id="bToCalc" disabled>Calculations →</button><span class="note" id="calcNote">You need readings at 3 different heights for at least one liquid.</span></div>
+  </div>
+</section>
+
+<!-- ================= STAGE 3 : CALCULATIONS ================= -->
+<section id="s3" hidden>
+  <div class="card">
+    <h2>Calculations</h2>
+    <p style="margin:4px 0">Calculate and fill in the values for every reading:</p>
+    <span class="f">R = (R₁ + R₂)/2 &nbsp;·&nbsp; i_c = tan⁻¹( R / 2h ) &nbsp;·&nbsp; μ = 1 / sin i_c</span>
+    <div class="note">Keep your calculator in <b>degree</b> mode. Write R to 2 decimals, i<sub>c</sub> to 2 decimals (degrees) and μ to 3 decimals. "Check" compares your answer with your own table readings.</div>
+    <div class="tw" style="margin-top:10px" id="calcTab"></div>
+  </div>
+  <div class="card">
+    <h3>Mean refractive index (for each liquid)</h3>
+    <div id="meanBox"></div>
+  </div>
+  <div class="btns"><button class="b" data-go="2">← Back to lab</button><button class="b p" id="bToGraph" disabled>Graph →</button><span class="note" id="graphNote"></span></div>
+</section>
+
+<!-- ================= STAGE 4 : GRAPH ================= -->
+<section id="s4" hidden>
+  <div class="card">
+    <h2>Graph: R vs h</h2>
+    <div class="note">From theory R = 2h·tan i_c, so the graph of R against h is a straight line through the origin. Slope = 2 tan i_c.</div>
+    <div class="grid" style="margin-top:10px">
+      <label class="f">Liquid (graph for)<select id="gLiq"></select></label>
+      <label class="f">What goes on the X-axis?<select id="gX"><option value="">— select —</option><option value="h">h (cm)</option><option value="R">R (cm)</option><option value="mu">μ</option></select></label>
+      <label class="f">What goes on the Y-axis?<select id="gY"><option value="">— select —</option><option value="h">h (cm)</option><option value="R">R (cm)</option><option value="mu">μ</option></select></label>
+      <label class="f">X scale: 1 big box (1 cm) =<select id="gSX"><option value="">— select —</option></select></label>
+      <label class="f">Y scale: 1 big box (1 cm) =<select id="gSY"><option value="">— select —</option></select></label>
+    </div>
+    <div class="btns"><button class="b" id="gReady">Check axes and scale</button></div>
+    <div class="rd" id="msgG">First choose the variable for the x-axis and the y-axis, then the scale of both axes. Graph paper: 14 big boxes (x) × 12 big boxes (y); each big box = 1 cm = 10 small boxes.</div>
+  </div>
+  <div class="card">
+    <h3>Graph paper</h3>
+    <div class="ptl" id="ptList"></div>
+    <div class="cv"><canvas id="cvG"></canvas></div>
+    <div class="btns">
+      <button class="b" id="gUndo">Remove last point</button>
+      <button class="b" id="gClear">Clear all points</button>
+      <button class="b" id="gLine" disabled>Draw best-fit line</button>
+    </div>
+    <div class="note" id="gHelp">Click/tap each point at its correct position (the origin is the bottom-left corner).</div>
+  </div>
+  <div class="card" id="slopeCard" hidden>
+    <h3>μ from the slope</h3>
+    <div class="note">Read two widely separated points on your own line (points of the line, not data points) and find the slope.</div>
+    <div class="obsform" style="margin-top:8px">
+      <label class="f">x₁ (h, cm)<input type="number" id="sx1" step="0.01"></label>
+      <label class="f">y₁ (R, cm)<input type="number" id="sy1" step="0.01"></label>
+      <label class="f">x₂ (h, cm)<input type="number" id="sx2" step="0.01"></label>
+      <label class="f">y₂ (R, cm)<input type="number" id="sy2" step="0.01"></label>
+      <label class="f">Slope = (y₂−y₁)/(x₂−x₁)<input type="number" id="sSl" step="0.001"></label>
+      <label class="f">μ = 1/sin(tan⁻¹(slope/2))<input type="number" id="sMu" step="0.001"></label>
+    </div>
+    <div class="btns"><button class="b p" id="bSlope">Check</button></div>
+    <div class="rd" id="msgS"></div>
+  </div>
+  <div class="btns"><button class="b" data-go="3">← Calculations</button><button class="b p" id="bToRes" disabled>Result →</button><span class="note" id="resNote">Complete the graph (slope + μ) for at least one liquid.</span></div>
+</section>
+
+<!-- ================= STAGE 5 : ERROR ANALYSIS ================= -->
+<section id="s5" hidden>
+  <div class="card">
+    <h2>Error analysis</h2>
+    <div class="note">A result without an uncertainty is incomplete. Work out how far your readings and your final μ can be trusted. Formulas are in the manual:</div>
+    <span class="f">Δμ = ((μ² − 1)/μ) · √[ (Δh/h)² + (ΔR/R)² ]</span>
+    <h3 style="margin-top:12px">A · Least counts / uncertainties of the measurements</h3>
+    <div class="obsform">
+      <label class="f">Δh (cm) — vernier least count<input type="number" id="eDh" step="any"></label>
+      <label class="f">ΔR (cm) — uncertainty in reading R<input type="number" id="eDR" step="any"></label>
+      <div class="btns" style="margin:0"><button class="b p" id="bLC">Check</button></div>
+    </div>
+    <div class="rd" id="msgLC">Enter Δh and ΔR. The loupe grid has 1 mm (0.1 cm) divisions — decide how finely you can estimate the edge of the dark circle.</div>
+  </div>
+  <div class="card">
+    <h3>B · Uncertainty Δμ of every reading</h3>
+    <div class="tw errgrid" id="errTab"></div>
+  </div>
+  <div class="card">
+    <h3>C · Final uncertainty of each liquid (from the calculations)</h3>
+    <div class="note">Δμ̄ = mean of the Δμ values · SD = sample standard deviation of the μ values · % uncertainty = Δμ̄ / μ̄ × 100</div>
+    <div id="errMean"></div>
+  </div>
+  <div class="card">
+    <h3>D · Uncertainty from the graph (max–min slope method)</h3>
+    <div class="note">Only for liquids whose graph you have completed. S<sub>max</sub> = min[(R<sub>i</sub> + ΔR)/h<sub>i</sub>], S<sub>min</sub> = max[(R<sub>i</sub> − ΔR)/h<sub>i</sub>], μ(S) = √(1 + 4/S²), Δμ<sub>graph</sub> = |μ(S<sub>min</sub>) − μ(S<sub>max</sub>)|/2.</div>
+    <div id="errGraph"></div>
+  </div>
+  <div class="btns"><button class="b" data-go="4">← Graph</button><button class="b p" id="bToResult" disabled>Result →</button><span class="note" id="errNote"></span></div>
+</section>
+
+<!-- ================= STAGE 6 : RESULT ================= -->
+<section id="s6" hidden>
+  <div class="card">
+    <h2>Result</h2>
+    <div class="tw" id="resBox"></div>
+    <div class="btns"><button class="b" id="bReveal">Compare with actual / standard values</button></div>
+    <div class="note" id="revNote"></div>
+  </div>
+  <div class="card">
+    <h3>Conclusion (write in your own words)</h3>
+    <textarea id="concl" placeholder="e.g. The refractive index of water was found to be ... Sources of error ..."></textarea>
+  </div>
+  <div class="card">
+    <h3>Viva questions (think of your answer first, then check)</h3>
+    <div id="viva"></div>
+  </div>
+  <div class="card">
+    <h3>Report</h3>
+    <div class="note">The report contains your name, readings, calculations, graph, result and conclusion. Press "Print / Save as PDF" and choose "Save as PDF" in the browser.</div>
+    <div class="btns"><button class="b p" id="bPrint">Print / Save as PDF</button><button class="b" id="bRepHtml">Download report (HTML)</button><button class="b" id="bCsv">Download readings (CSV)</button><button class="b" data-go="5">← Error analysis</button></div>
+    <div class="note" id="prNote"></div>
+  </div>
+</section>
+
+</main>
+<div id="report"></div>
+
+<script>
+/* ============ helpers ============ */
+const $=id=>document.getElementById(id);
+const dpr=Math.min(window.devicePixelRatio||1,2);
+const hn=x=>{let s=Math.sin(x*12.9898+78.233)*43758.5453;return s-Math.floor(s)};
+const gs=x=>(hn(x)+hn(x+17.3)+hn(x+41.9)-1.5)*2;
+const ns=r=>{const e=Math.pow(10,Math.floor(Math.log10(r)));const q=r/e;return(q<1.5?1:q<3?2:q<7?5:10)*e};
+const tr=(x,d)=>(+x.toFixed(d)).toString();
+const RAD=Math.PI/180;
+function setup(cv,h){
+  const w=Math.max(200,cv.parentElement.clientWidth);
+  cv.style.width=w+'px';cv.style.height=h+'px';
+  cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
+  const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);
+  return{c,w,h};
+}
+function glow(c,x,y,r,a,col){
+  const g=c.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0,`rgba(255,240,240,${a})`);g.addColorStop(.3,`rgba(${col},${a})`);g.addColorStop(1,`rgba(${col},0)`);
+  c.fillStyle=g;c.beginPath();c.arc(x,y,r,0,7);c.fill();
+}
+function lbl(c,t,x,y,al){c.textAlign=al||'center';c.lineWidth=3;c.strokeStyle='rgba(0,0,0,.75)';c.strokeText(t,x,y);c.fillStyle='#fff';c.fillText(t,x,y);c.lineWidth=1;}
+const msg=(t,id)=>{$(id||'msgC').innerHTML=t||'';};
+
+/* ============ liquids ============ */
+const LQ={
+  water:{name:'Water',n:1.333,dot:'#5aa0ff',fill:[.50,.72,1.0],cap:[.16,.43,.96],l1:'WATER',l2:'H2O',band:'#2a6df4'},
+  salt:{name:'Salt water (20%)',n:1.364,dot:'#58c4d0',fill:[.70,.92,.93],cap:[.07,.57,.62],l1:'SALT WATER',l2:'20% NaCl',band:'#12929e'},
+  paraffin:{name:'Paraffin oil',n:1.476,dot:'#e6dc8a',fill:[.94,.91,.66],cap:[.66,.60,.18],l1:'PARAFFIN',l2:'OIL',band:'#a89a2e'},
+  coconut:{name:'Coconut oil',n:1.449,dot:'#efe9d4',fill:[.96,.94,.84],cap:[.48,.55,.29],l1:'COCONUT',l2:'OIL',band:'#7a8d4a'},
+  mustard:{name:'Mustard oil',n:1.466,dot:'#f0be28',fill:[.91,.70,.12],cap:[.69,.48,0],l1:'MUSTARD',l2:'OIL',band:'#b07a00'}
+};
+const ORDER=['water','salt','paraffin','coconut','mustard'];
+
+/* ============ state ============ */
+const RC=13,HMAX=5.5,RESID=0.08,RATE=0.55;
+const rsg=()=>(Math.random()<.5?-1:1)*(0.25+Math.random()*0.4);
+const K={sel:null,seed:Math.random()*40+3,ox0:rsg(),oy0:rsg(),bx:0,by:0};
+const T={hs:0,mix:{}};
+const Hm={hdiv:null,sig:'',hint:false};
+const V={px:10,lens:null,magPx:95};
+const P={active:false,hold:false};
+const E={ok:false,bottles:[],tilt:-1,pop:-1,drag:null,dirty:true,cam:null,tween:null,poured:false};
+
+const tot=()=>Object.values(T.mix).reduce((s,m)=>s+m.h,0);
+const nEff=()=>{const t=tot();return t>1e-6?Object.values(T.mix).reduce((s,m)=>s+m.h*m.n,0)/t:1.333;};
+const domKey=()=>{let b=null;for(const l in T.mix)if(!b||T.mix[l].h>T.mix[b].h)b=l;return b;};
+const domLiq=()=>{const d=domKey();return d?T.mix[d].key:null;};
+const lvlSig=()=>tot().toFixed(3);
+const ctr=()=>({x:K.ox0+K.bx,y:K.oy0+K.by});
+const aligned=()=>Math.hypot(ctr().x,ctr().y)<0.08;
+const fs=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(2);
+const contamMsg=()=>Object.keys(T.mix).length>1?'<span class="warn">⚠ The container already had a different liquid — they have mixed and μ will come out wrong. Drain + wipe and start again.</span>':'';
+function trueR(){const hh=T.hs;return hh>0.04?2*hh*Math.tan(Math.asin(1/nEff())):0;}
+/* dark circle: centre = laser spot (ox,oy), radius R. edge crossing on +x axis and +y axis (paper centre = hole) */
+function edgeX(){const c=ctr(),R=trueR();return R>0&&R>Math.abs(c.y)?c.x+Math.sqrt(R*R-c.y*c.y):0;}
+function edgeY(){const c=ctr(),R=trueR();return R>0&&R>Math.abs(c.x)?c.y+Math.sqrt(R*R-c.x*c.x):0;}
+
+/* ============ graph paper painter (3D floor + 2D top view + loupe) ============ */
+function paintPaper(c,w,h,px,cx,cy,o){
+  const X=x=>w/2+(x-cx)*px,Y=y=>h/2-(y-cy)*px;
+  c.fillStyle='#05070b';c.fillRect(0,0,w,h);
+  c.save();c.beginPath();c.arc(X(0),Y(0),RC*px,0,7);c.clip();
+  c.fillStyle='#efe9d8';c.fillRect(0,0,w,h);
+  const xl=cx-w/2/px,xr=cx+w/2/px,yb=cy-h/2/px,yt=cy+h/2/px;
+  const col=(cm,hf)=>cm?'rgba(120,80,60,.55)':hf?'rgba(120,80,60,.32)':'rgba(120,80,60,.17)';
+  for(let k=Math.floor(xl*10);k<=Math.ceil(xr*10);k++){
+    const cmL=k%10===0,hf=k%5===0;
+    if(!cmL&&!hf&&px*.1<5)continue;if(!cmL&&hf&&px*.5<6)continue;
+    c.strokeStyle=col(cmL,hf);c.lineWidth=cmL?1:.7;c.beginPath();c.moveTo(X(k/10),0);c.lineTo(X(k/10),h);c.stroke();
+  }
+  for(let k=Math.floor(yb*10);k<=Math.ceil(yt*10);k++){
+    const cmL=k%10===0,hf=k%5===0;
+    if(!cmL&&!hf&&px*.1<5)continue;if(!cmL&&hf&&px*.5<6)continue;
+    c.strokeStyle=col(cmL,hf);c.lineWidth=cmL?1:.7;c.beginPath();c.moveTo(0,Y(k/10));c.lineTo(w,Y(k/10));c.stroke();
+  }
+  if(o.lit){
+    const gx=X(o.ox),gy=Y(o.oy),Rp=o.R*px,ew=Math.max(2.5,.05*px),r1=RC*px*2.6;
+    const cl=v=>Math.max(0,Math.min(.995,v));
+    const s1=cl((Rp-ew)/r1),s2=Math.max(s1+.0005,cl((Rp+ew)/r1)),s3=Math.max(s2+.0005,cl((Rp+ew*6+px*.4)/r1));
+    const g=c.createRadialGradient(gx,gy,0,gx,gy,r1);
+    g.addColorStop(0,'rgba(12,6,6,.9)');g.addColorStop(s1,'rgba(14,6,6,.88)');
+    g.addColorStop(s2,'rgba(255,150,130,.58)');g.addColorStop(s3,'rgba(255,70,70,.40)');g.addColorStop(1,'rgba(255,50,50,.26)');
+    c.fillStyle=g;c.fillRect(0,0,w,h);
+  }
+  c.restore();
+  c.strokeStyle='#cfc8b6';c.lineWidth=3;c.beginPath();c.arc(X(0),Y(0),RC*px,0,7);c.stroke();c.lineWidth=1;
+  c.fillStyle='#000';c.beginPath();c.arc(X(0),Y(0),Math.max(2,.09*px),0,7);c.fill();
+  c.strokeStyle='#fff';c.lineWidth=1.2;c.beginPath();c.arc(X(0),Y(0),Math.max(3.5,.09*px+1.8),0,7);c.stroke();c.lineWidth=1;
+  glow(c,X(o.ox),Y(o.oy),Math.max(6,.16*px),1,'255,60,60');
+  c.font='10px system-ui';
+  if(o.axes){for(let v=-12;v<=12;v+=2){if(!v)continue;lbl(c,v,X(v),Y(0)+12);lbl(c,v,X(0)+7,Y(v)+3,'left');}}
+  if(o.lab==='x'||o.lab==='xy'){for(let k=Math.floor(xl*10);k<=Math.ceil(xr*10);k++){if(k%5===0)lbl(c,(k/10).toFixed(1),X(k/10),h-5);}}
+  if(o.lab==='y'||o.lab==='xy'){for(let k=Math.floor(yb*10);k<=Math.ceil(yt*10);k++){if(k%5===0)lbl(c,(k/10).toFixed(1),6,Y(k/10)+3,'left');}}
+}
+
+/* ============ pouring / tools logic ============ */
+function addLiquid(dh){
+  const room=HMAX-tot();
+  if(room<0.0005)return 'full';
+  dh=Math.min(dh,room);
+  const L=LQ[K.sel],lab=L.name,m=T.mix[lab]||(T.mix[lab]={h:0,n:L.n,key:K.sel});
+  m.h+=dh;E.poured=true;E.dirty=true;return 'ok';
+}
+function takeOut(dh){
+  const t=tot();
+  if(t<0.0005)return msg('The container is empty.');
+  dh=Math.min(dh,t);const f=(t-dh)/t;
+  for(const l in T.mix){T.mix[l].h*=f;if(T.mix[l].h<1e-6)delete T.mix[l];}
+  E.dirty=true;msg('Removed a little liquid with the dropper.');
+}
+function dropIn(dh){
+  if(!K.sel)return msg('First pick a bottle from the shelf (tap it) or choose a liquid from the list — the dropper uses that liquid.');
+  if(addLiquid(dh)==='full')return msg('The container is full (max ≈ 5.5 cm).');
+  msg(contamMsg()||('Added <b>'+LQ[K.sel].name+'</b> with the dropper.'));
+}
+function drain(){
+  const t=tot();
+  if(t<0.0005)return msg('The container is already empty.');
+  const f=Math.min(RESID,t)/t;
+  for(const l in T.mix)T.mix[l].h*=f;
+  E.tilt=0;E.dirty=true;
+  msg('Container tipped over — a thin film of liquid (≈0.8 mm) is left behind. Wipe it with tissue, otherwise it will mix with the next liquid.');
+}
+function wipe(){
+  if(tot()<0.0005)return msg('The container is already clean.');
+  if(tot()>RESID+0.002)return msg('First drain the container (tip it), then wipe with tissue.');
+  T.mix={};E.pop=0;E.dirty=true;msg('✓ Container wiped clean — you can pour a new liquid now.');
+}
+function updHand(){
+  $('hand').innerHTML=K.sel?'<i style="background:'+LQ[K.sel].dot+'"></i>In hand: '+LQ[K.sel].name:'In hand: —';
+  $('lvl').textContent=T.hs>0.005?'Liquid in container':'Container empty';
+  const s=$('selLiq');if(s.value!==(K.sel||''))s.value=K.sel||'';
+}
+$('tDropP').onclick=()=>dropIn(0.1);
+$('tDropM').onclick=()=>takeOut(0.1);
+$('tDrain').onclick=drain;
+$('tWipe').onclick=wipe;
+$('selLiq').onchange=e=>{K.sel=e.target.value||null;if(K.sel)msg('<b>'+LQ[K.sel].name+'</b> is in hand. Hold "Hold to pour" or drag the bottle over the container.');updHand();};
+$('selLiq').innerHTML='<option value="">— choose liquid —</option>'+ORDER.map(k=>'<option value="'+k+'">'+LQ[k].name+'</option>').join('');
+const hb=$('bHold');
+hb.addEventListener('pointerdown',e=>{
+  e.preventDefault();
+  if(!K.sel)return msg('First pick a bottle from the shelf (tap it) or choose a liquid from the list.');
+  if(tot()>=HMAX-0.0005)return msg('The container is full (max ≈ 5.5 cm).');
+  try{hb.setPointerCapture(e.pointerId);}catch(_){}
+  P.hold=true;E.poured=false;
+});
+['pointerup','pointercancel','pointerleave'].forEach(t=>hb.addEventListener(t,()=>{if(P.hold){P.hold=false;E.dirty=true;msg(contamMsg()||'✓ Poured. Now measure h in ②.');}}));
+
+/* ============ 3D ENGINE (plain WebGL, no library) ============ */
+const wrap=$('view3d'),canvas=$('gl');
+const gl=canvas.getContext('webgl',{antialias:true,alpha:false})||null;
+(function(){
+if(!gl){$('nogl').hidden=false;return;}
+E.ok=true;
+/* --- tiny math --- */
+const v3={
+  add:(a,b)=>[a[0]+b[0],a[1]+b[1],a[2]+b[2]],sub:(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]],
+  mul:(a,s)=>[a[0]*s,a[1]*s,a[2]*s],dot:(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],
+  cross:(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],
+  len:a=>Math.hypot(a[0],a[1],a[2]),norm:a=>{const l=Math.hypot(a[0],a[1],a[2])||1;return[a[0]/l,a[1]/l,a[2]/l];}
+};
+const M4={
+  id:()=>[1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+  mul:(a,b)=>{const o=new Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++){let s=0;for(let k=0;k<4;k++)s+=a[k*4+r]*b[c*4+k];o[c*4+r]=s;}return o;},
+  T:(x,y,z)=>[1,0,0,0,0,1,0,0,0,0,1,0,x,y,z,1],
+  S:(x,y,z)=>[x,0,0,0,0,y,0,0,0,0,z,0,0,0,0,1],
+  Rz:a=>{const c=Math.cos(a),s=Math.sin(a);return[c,s,0,0,-s,c,0,0,0,0,1,0,0,0,0,1];},
+  persp:(f,asp,n,fa)=>{const t=1/Math.tan(f/2);return[t/asp,0,0,0,0,t,0,0,0,0,(fa+n)/(n-fa),-1,0,0,2*fa*n/(n-fa),0];},
+  look:(e,t)=>{const z=v3.norm(v3.sub(e,t)),x=v3.norm(v3.cross([0,1,0],z)),y=v3.cross(z,x);
+    return[x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-v3.dot(x,e),-v3.dot(y,e),-v3.dot(z,e),1];},
+  pt:(m,p)=>[m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12],m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13],m[2]*p[0]+m[6]*p[1]+m[10]*p[2]+m[14]],
+  n3:m=>[m[0],m[1],m[2],m[4],m[5],m[6],m[8],m[9],m[10]],
+  m3mul:(a,b)=>{const o=new Array(9);for(let c=0;c<3;c++)for(let r=0;r<3;r++){let s=0;for(let k=0;k<3;k++)s+=a[k*3+r]*b[c*3+k];o[c*3+r]=s;}return o;}
+};
+const ID3=[1,0,0,0,1,0,0,0,1];
+
+/* --- shaders --- */
+const vsS=`attribute vec3 aP;attribute vec3 aN;attribute vec2 aT;
+uniform mat4 uVP,uM;uniform mat3 uNM;
+varying vec3 vN,vW;varying vec2 vT;
+void main(){vec4 w=uM*vec4(aP,1.0);vW=w.xyz;vN=normalize(uNM*aN);vT=aT;gl_Position=uVP*w;}`;
+const fsS=`precision mediump float;
+varying vec3 vN,vW;varying vec2 vT;
+uniform vec3 uCol,uEye;
+uniform float uAlpha,uSpec,uRefl,uUnlit,uEmis,uTex,uRim;
+uniform sampler2D uS;
+void main(){
+  vec3 n=normalize(vN);if(!gl_FrontFacing)n=-n;
+  vec3 base=uCol;float al=uAlpha;
+  if(uTex>.5&&uTex<1.5){base*=texture2D(uS,vT).rgb;}
+  if(uTex>1.5){al*=texture2D(uS,vT).a;}
+  vec3 V=normalize(uEye-vW);
+  float fres=pow(1.0-max(dot(n,V),0.0),3.0);
+  vec3 col;
+  if(uUnlit>.5){col=base;}
+  else{
+    vec3 L1=normalize(vec3(-.4,.85,.55)),L2=normalize(vec3(.7,.3,-.4));
+    float d1=max(dot(n,L1),0.0),d2=max(dot(n,L2),0.0);
+    vec3 amb=mix(vec3(.17,.15,.14),vec3(.36,.40,.50),.5+.5*n.y);
+    col=base*(amb+vec3(1.0,.95,.88)*d1*.85+vec3(.5,.6,.9)*d2*.3);
+    if(uSpec>0.0){vec3 Hh=normalize(L1+V);col+=vec3(.6)*pow(max(dot(n,Hh),0.0),uSpec);}
+    vec3 R=reflect(-V,n);float sky=smoothstep(-.3,.9,R.y);
+    vec3 env=mix(vec3(.10,.09,.09),vec3(.75,.82,.95),sky);
+    col+=env*uRefl*(.25+.75*fres);
+  }
+  col+=base*uEmis;
+  al=clamp(al+uRim*fres,0.0,1.0);
+  gl_FragColor=vec4(col,al);
+}`;
+function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);if(!gl.getShaderParameter(o,gl.COMPILE_STATUS))console.error(gl.getShaderInfoLog(o));return o;}
+const prog=gl.createProgram();
+gl.attachShader(prog,sh(gl.VERTEX_SHADER,vsS));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fsS));
+gl.bindAttribLocation(prog,0,'aP');gl.bindAttribLocation(prog,1,'aN');gl.bindAttribLocation(prog,2,'aT');
+gl.linkProgram(prog);gl.useProgram(prog);
+if(!gl.getProgramParameter(prog,gl.LINK_STATUS))console.error(gl.getProgramInfoLog(prog));
+const U={};['uVP','uM','uNM','uCol','uEye','uAlpha','uSpec','uRefl','uUnlit','uEmis','uTex','uRim','uS'].forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+gl.enableVertexAttribArray(0);gl.enableVertexAttribArray(1);gl.enableVertexAttribArray(2);
+gl.uniform1i(U.uS,0);
+
+/* --- geometry builders --- */
+function mk(g,mode){
+  const vb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vb);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(g.v),gl.STATIC_DRAW);
+  const ib=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ib);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(g.i),gl.STATIC_DRAW);
+  return{vb,ib,n:g.i.length,mode:mode||gl.TRIANGLES};
+}
+function lathe(prof,segs,smooth,a0,a1){
+  a0=a0===undefined?0:a0;a1=a1===undefined?Math.PI*2:a1;
+  const v=[],ix=[],n=prof.length,sn=[];
+  for(let k=0;k<n-1;k++){const dr=prof[k+1][0]-prof[k][0],dy=prof[k+1][1]-prof[k][1],l=Math.hypot(dr,dy)||1;sn.push([dy/l,-dr/l]);}
+  const th=j=>a0+(a1-a0)*j/segs;
+  if(smooth){
+    for(let k=0;k<n;k++){
+      const a=sn[Math.max(0,k-1)],b=sn[Math.min(n-2,k)];let nr=a[0]+b[0],ny=a[1]+b[1];const l=Math.hypot(nr,ny)||1;nr/=l;ny/=l;
+      for(let j=0;j<=segs;j++){const t=th(j),c=Math.cos(t),s=Math.sin(t);v.push(prof[k][0]*c,prof[k][1],prof[k][0]*s,nr*c,ny,nr*s,j/segs,k/(n-1));}
+    }
+    for(let k=0;k<n-1;k++)for(let j=0;j<segs;j++){const a=k*(segs+1)+j,b=a+segs+1;ix.push(a,b,a+1,a+1,b,b+1);}
+  }else{
+    for(let k=0;k<n-1;k++){
+      for(let r=0;r<2;r++){const p=prof[k+r];
+        for(let j=0;j<=segs;j++){const t=th(j),c=Math.cos(t),s=Math.sin(t);v.push(p[0]*c,p[1],p[0]*s,sn[k][0]*c,sn[k][1],sn[k][0]*s,j/segs,(k+r)/(n-1));}}
+      const base=k*2*(segs+1);
+      for(let j=0;j<segs;j++){const a=base+j,b=base+segs+1+j;ix.push(a,b,a+1,a+1,b,b+1);}
+    }
+  }
+  return{v,i:ix};
+}
+function box(w,h,d,tile){
+  const v=[],i=[],hx=w/2,hy=h/2,hz=d/2;
+  const F=[[[0,0,1],[1,0,0],[0,1,0],w,h],[[0,0,-1],[-1,0,0],[0,1,0],w,h],[[1,0,0],[0,0,-1],[0,1,0],d,h],[[-1,0,0],[0,0,1],[0,1,0],d,h],[[0,1,0],[1,0,0],[0,0,-1],w,d],[[0,-1,0],[1,0,0],[0,0,1],w,d]];
+  F.forEach(f=>{
+    const n=f[0],u=f[1],vv=f[2],fw=f[3],fh=f[4],c=[n[0]*hx,n[1]*hy,n[2]*hz],base=v.length/8;
+    [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(q=>{
+      v.push(c[0]+u[0]*q[0]*fw/2+vv[0]*q[1]*fh/2,c[1]+u[1]*q[0]*fw/2+vv[1]*q[1]*fh/2,c[2]+u[2]*q[0]*fw/2+vv[2]*q[1]*fh/2,n[0],n[1],n[2],(q[0]+1)/2*(tile?fw/tile:1),(q[1]+1)/2*(tile?fh/tile:1));
+    });
+    i.push(base,base+1,base+2,base,base+2,base+3);
+  });
+  return{v,i};
+}
+function paperDisc(r,segs){
+  const v=[0,0,0,0,1,0,.5,.5],ix=[];
+  for(let j=0;j<=segs;j++){const t=2*Math.PI*j/segs,x=r*Math.cos(t),z=r*Math.sin(t);v.push(x,0,z,0,1,0,(x+r)/(2*r),(z+r)/(2*r));}
+  for(let j=1;j<=segs;j++)ix.push(0,j+1,j);
+  return{v,i:ix};
+}
+function quad(){return{v:[-1,0,-1,0,1,0,0,0,1,0,-1,0,1,0,1,0,1,0,1,0,1,1,0,1,-1,0,1,0,1,0,0,1],i:[0,2,1,0,3,2]};}
+function coneLines(n){
+  const v=[0,0,0,0,1,0,0,0],ix=[];
+  for(let j=0;j<n;j++){const t=2*Math.PI*j/n;v.push(Math.cos(t),1,Math.sin(t),0,1,0,0,0);}
+  for(let j=0;j<n;j++){ix.push(0,1+j,1+j,1+(j+1)%n);}
+  return{v,i:ix};
+}
+
+/* --- textures --- */
+function mkTex(c,mip,rep){
+  const t=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,t);
+  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,c);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,rep?gl.REPEAT:gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,rep?gl.REPEAT:gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+  if(mip){gl.generateMipmap(gl.TEXTURE_2D);gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);}
+  else gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+  return t;
+}
+function woodTex(){
+  const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
+  x.fillStyle='#8d6037';x.fillRect(0,0,256,256);
+  for(let i=0;i<150;i++){const y=Math.random()*256;x.strokeStyle='rgba('+(55+Math.random()*40|0)+','+(30+Math.random()*25|0)+',12,'+(.08+Math.random()*.2)+')';x.lineWidth=.6+Math.random()*2.2;x.beginPath();x.moveTo(0,y);for(let xx=0;xx<=256;xx+=32)x.lineTo(xx,y+Math.sin(xx*.05+i)*2.5);x.stroke();}
+  x.fillStyle='rgba(30,15,5,.35)';x.fillRect(0,0,256,2);x.fillRect(0,128,256,2);
+  return mkTex(c,true,true);
+}
+function labelTex(k){
+  const L=LQ[k],c=document.createElement('canvas');c.width=256;c.height=128;const x=c.getContext('2d');
+  x.fillStyle='#f4eedd';x.fillRect(0,0,256,128);x.fillStyle=L.band;x.fillRect(0,0,256,26);x.fillRect(0,112,256,16);
+  x.fillStyle='#222';x.textAlign='center';x.font='bold 34px sans-serif';x.fillText(L.l1,128,70,236);
+  x.font='22px sans-serif';x.fillStyle='#555';x.fillText(L.l2,128,98,236);
+  return mkTex(c,true,false);
+}
+function blobTex(){
+  const c=document.createElement('canvas');c.width=c.height=64;const x=c.getContext('2d');
+  const g=x.createRadialGradient(32,32,2,32,32,32);g.addColorStop(0,'rgba(0,0,0,.85)');g.addColorStop(.6,'rgba(0,0,0,.35)');g.addColorStop(1,'rgba(0,0,0,0)');
+  x.fillStyle=g;x.fillRect(0,0,64,64);return mkTex(c,false,false);
+}
+const paperCv=document.createElement('canvas');paperCv.width=paperCv.height=512;
+const paperCtx=paperCv.getContext('2d');
+paperCtx.fillStyle='#efe9d8';paperCtx.fillRect(0,0,512,512);
+const paperTex=mkTex(paperCv,false,false);
+let paperSig='';
+function updPaper(){
+  const ce=ctr(),sig=T.hs.toFixed(3)+'|'+ce.x.toFixed(2)+'|'+ce.y.toFixed(2)+'|'+nEff().toFixed(3);
+  if(sig===paperSig)return;paperSig=sig;
+  paintPaper(paperCtx,512,512,256/RC,0,0,{lit:T.hs>.04,R:trueR(),ox:ce.x,oy:ce.y,axes:true});
+  gl.bindTexture(gl.TEXTURE_2D,paperTex);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,paperCv);
+}
+
+/* --- scene --- */
+const objs=[];
+function add(mesh,o){
+  const ob=Object.assign({mesh,M:M4.id(),NM:ID3,col:[1,1,1],alpha:1,spec:0,refl:0,unlit:0,emis:0,tex:null,texMode:0,glass:false,vis:true,rim:0,parent:null,dbl:false},o||{});
+  objs.push(ob);return ob;
+}
+const CX=14,CZ=6,PY=19,SHELF_Y=35;
+const mTable=mk(box(170,4,84,60)),mBox=(w,h,d)=>mk(box(w,h,d)),cylG=mk(lathe([[0,-.5],[1,-.5],[1,.5],[0,.5]],20,false));
+const texWood=woodTex(),texBlob=blobTex();
+// room
+add(mBox(700,2,700),{M:M4.T(0,-61,0),col:[.10,.11,.14]});
+add(mBox(320,150,2),{M:M4.T(-10,14,-43),col:[.20,.25,.34]});
+add(mBox(2,150,120),{M:M4.T(-100,14,-5),col:[.17,.21,.29]});
+// table
+add(mTable,{M:M4.T(0,-2,0),col:[1,1,1],tex:texWood,texMode:1,spec:18});
+[[-78,-30],[78,-30],[-78,40],[78,40]].forEach(p=>add(mBox(5,58,5),{M:M4.T(p[0],-33,p[1]),col:[.35,.22,.12]}));
+// shelf
+add(mBox(58,2,14),{M:M4.T(-43,SHELF_Y-1,-34),col:[1,1,1],tex:texWood,texMode:1,spec:20});
+[-66,-20].forEach(x=>add(mBox(2.2,9,12),{M:M4.T(x,SHELF_Y-6.5,-34),col:[.45,.3,.17]}));
+add(mBox(58,.6,1),{M:M4.T(-43,SHELF_Y+.4,-28.5),col:[.45,.3,.17]});
+// blob shadows
+const mQuad=mk(quad());
+function blob(x,z,r,a){add(mQuad,{M:M4.mul(M4.T(x,.04,z),M4.S(r,1,r)),col:[0,0,0],alpha:a||.5,unlit:1,tex:texBlob,texMode:2,dbl:true});}
+blob(CX,CZ,22,.55);blob(CX+50,CZ,13,.45);blob(CX,CZ-CR_(),9,.4);blob(-22,20,10,.4);blob(-50,18,10,.4);
+function CR_(){return RC+7.5;}
+// container (porcelain) - group 'cont'
+const cont={M:M4.id(),NM:ID3};
+const CRW=RC+.8;
+const mCont=mk(lathe([[0,0],[RC+.6,0],[RC+.8,.3],[RC+.8,7.8],[RC+.6,8.1],[RC+.2,8.1],[RC,7.8],[RC,.5],[0,.5]],64,false));
+add(mCont,{col:[.95,.94,.90],spec:40,refl:.25,parent:cont,dbl:true});
+const paperObj=add(mk(paperDisc(RC-.02,64)),{M:M4.T(0,.52,0),col:[1,1,1],tex:paperTex,texMode:1,emis:.62,parent:cont});
+const liqCyl=mk(lathe([[0,0],[RC-.06,0],[RC-.06,1],[0,1]],64,false));
+const liqObj=add(liqCyl,{col:[.5,.72,1],alpha:.5,glass:true,spec:90,refl:.55,rim:.25,parent:cont,vis:false});
+const coneObj=add(mk(lathe([[0,0],[1,1]],24,false)),{col:[1,.85,.2],alpha:.16,unlit:1,dbl:true,parent:cont,vis:false});
+const coneLn=add(mk(coneLines(24),gl.LINES),{col:[1,.85,.25],alpha:.9,unlit:1,parent:cont,vis:false});
+// laser + stand + mirror
+add(mBox(12,14.8,12),{M:M4.T(CX+50,7.4,CZ),col:[.22,.24,.28],spec:20});
+add(cylG,{M:M4.mul(M4.T(CX+45,18,CZ),M4.mul(M4.Rz(Math.PI/2),M4.S(3.2,30,3.2))),NM:M4.n3(M4.Rz(Math.PI/2)),col:[.18,.2,.24],spec:50,refl:.3});
+add(cylG,{M:M4.mul(M4.T(CX+30.3,18,CZ),M4.mul(M4.Rz(Math.PI/2),M4.S(3.4,1.2,3.4))),NM:M4.n3(M4.Rz(Math.PI/2)),col:[.8,.12,.1],spec:30});
+add(mBox(8,3,8),{M:M4.T(CX+62,1.5,CZ+14),col:[.12,.13,.16],spec:10});
+add(mBox(1.4,1.4,.4),{M:M4.T(CX+62,3.2,CZ+18.1),col:[.2,1,.3],unlit:1});
+const mp0=objs.length;
+add(mBox(10,1.5,10),{M:M4.T(CX,.75,CZ-RC-7.5),col:[.25,.27,.32],spec:30,refl:.2});
+add(cylG,{M:M4.mul(M4.T(CX,12.5,CZ-RC-7.5),M4.S(.6,24,.6)),col:[.7,.72,.78],spec:60,refl:.4});
+add(mBox(1.2,1.2,RC+7.5),{M:M4.T(CX,24,CZ-(RC+7.5)/2),col:[.7,.72,.78],spec:60,refl:.4});
+add(cylG,{M:M4.mul(M4.T(CX,21.9,CZ),M4.S(.4,4.2,.4)),col:[.7,.72,.78],spec:60,refl:.4});
+add(mBox(5,.3,5),{M:M4.mul(M4.T(CX,18,CZ),M4.Rz(-3*Math.PI/4)),NM:M4.n3(M4.Rz(-3*Math.PI/4)),col:[.85,.9,1],spec:120,refl:1.2});
+const mirrorParts=objs.slice(mp0);
+// beams
+const beam1=add(cylG,{col:[1,.12,.1],unlit:1,alpha:.95});
+const beam2=add(cylG,{col:[1,.12,.1],unlit:1,alpha:.95});
+const spotG=add(mk(paperDisc(1,20)),{col:[1,.35,.3],unlit:1,alpha:.9,vis:true});
+function seg(o,a,b,r){
+  const d=v3.sub(b,a),L=v3.len(d);if(L<1e-6){o.vis=false;return;}o.vis=true;
+  const y=v3.norm(d);let t=Math.abs(y[1])<.99?[0,1,0]:[1,0,0];
+  const x=v3.norm(v3.cross(t,y)),z=v3.cross(y,x),m=v3.mul(v3.add(a,b),.5);
+  o.M=[x[0]*r,x[1]*r,x[2]*r,0,y[0]*L,y[1]*L,y[2]*L,0,z[0]*r,z[1]*r,z[2]*r,0,m[0],m[1],m[2],1];
+  o.NM=[x[0],x[1],x[2],y[0],y[1],y[2],z[0],z[1],z[2]];
+}
+// tools: tissue box + waste bucket
+const tissueBox=add(mBox(12,5,7),{M:M4.T(-22,2.5,20),col:[.25,.5,.85],spec:20});
+const tissuePuff=add(mk(lathe([[0,0],[2.6,.3],[3.4,1.6],[2.2,3.4],[1.0,4.4],[0,4.6]],16,true)),{M:M4.T(-22,5,20),col:[.97,.97,.98]});
+const bucketM=mk(lathe([[0,0],[5,0],[6.8,11],[6.2,11],[4.4,.8],[0,.8]],32,false));
+add(bucketM,{M:M4.T(-50,0,18),col:[.55,.15,.15],spec:30,refl:.15,dbl:true});
+const tools=[{c:[-22,5,20],r:8,fn:()=>wipe(),obj:tissueBox},{c:[-50,6,18],r:9,fn:()=>drain()}];
+
+// bottles
+const BH=16;
+const bProf=[[0,-16],[1.6,-16],[2.5,-15.8],[3.05,-15.3],[3.25,-14.6],[3.28,-13.5],[3.28,-8.2],[3.2,-7.3],[2.95,-6.5],[2.5,-5.7],[2.0,-4.9],[1.6,-4.1],[1.4,-3.2],[1.4,-.2],[1.55,0]];
+const mGlass=mk(lathe(bProf,40,true));
+const mFill=mk(lathe([[0,-15.5],[2.2,-15.5],[2.85,-15.1],[3.0,-14.4],[3.0,-9.0],[0,-9.0]],32,false));
+const mCap=mk(lathe([[0,0],[1.75,0],[1.75,2.2],[0,2.2]],24,false));
+const lg=lathe([[3.33,-14.0],[3.33,-8.0]],16,false,Math.PI/2-1.1,Math.PI/2+1.1);for(let q=6;q<lg.v.length;q+=8){lg.v[q]=1-lg.v[q];lg.v[q+1]=1-lg.v[q+1];}
+const mLabel=mk(lg);
+ORDER.forEach((k,idx)=>{
+  const L=LQ[k],home=[-62+idx*10.5,SHELF_Y+BH,-34],b={key:k,home:home.slice(),pos:home.slice(),rz:0,xf:{M:M4.id(),NM:ID3}};
+  b.fill=add(mFill,{col:L.fill,emis:.28,spec:30,refl:.1,parent:b.xf});
+  b.label=add(mLabel,{col:[1,1,1],tex:labelTex(k),texMode:1,parent:b.xf});
+  b.cap=add(mCap,{col:L.cap,spec:40,refl:.2,parent:b.xf});
+  b.glass=add(mGlass,{col:[.85,.93,1],alpha:.16,rim:.5,glass:true,spec:90,refl:.9,parent:b.xf});
+  E.bottles.push(b);
+});
+
+// liquid stream + ripple
+const stream=add(cylG,{col:[.5,.7,1],alpha:.85,unlit:1,vis:false});
+const ripple=add(mk(paperDisc(1,24)),{col:[1,1,1],alpha:.35,unlit:1,vis:false});
+
+/* --- camera --- */
+let fov=42*Math.PI/180;
+E.cam={yaw:.18,pitch:.40,dist:118,t:[-6,18,0]};
+const PRE={
+  over:{yaw:.18,pitch:.40,dist:118,t:[-6,18,0]},
+  shelf:{yaw:0,pitch:.16,dist:64,t:[-43,40,-34]},
+  cont:{yaw:.25,pitch:.55,dist:58,t:[CX,5,CZ]},
+  top:{yaw:0,pitch:1.5,dist:62,t:[CX,0,CZ]}
+};
+function goView(n){const p=PRE[n];if(!p)return;E.tween={from:{yaw:E.cam.yaw,pitch:E.cam.pitch,dist:E.cam.dist,t:E.cam.t.slice()},to:p,t:0};}
+document.querySelectorAll('#camBtns button').forEach(b=>b.onclick=()=>goView(b.dataset.v));
+function camBasis(){
+  const c=E.cam,cp=Math.cos(c.pitch),sp=Math.sin(c.pitch);
+  const eye=[c.t[0]+c.dist*cp*Math.sin(c.yaw),c.t[1]+c.dist*sp,c.t[2]+c.dist*cp*Math.cos(c.yaw)];
+  const f=v3.norm(v3.sub(c.t,eye)),r=v3.norm(v3.cross(f,[0,1,0])),u=v3.cross(r,f);
+  return{eye,f,r,u};
+}
+function resize(){
+  const dp=Math.min(window.devicePixelRatio||1,2),w=wrap.clientWidth,h=wrap.clientHeight;
+  if(!w||!h)return;
+  canvas.width=Math.round(w*dp);canvas.height=Math.round(h*dp);
+  const asp=w/h;fov=(asp<1.4?Math.min(78,42*Math.pow(1.4/asp,.7)):42)*Math.PI/180;
+}
+if(window.ResizeObserver)new ResizeObserver(resize).observe(wrap);window.addEventListener('resize',resize);resize();
+
+/* --- picking & input --- */
+function rayAt(e){
+  const rc=canvas.getBoundingClientRect(),nx=(e.clientX-rc.left)/rc.width*2-1,ny=1-(e.clientY-rc.top)/rc.height*2,b=camBasis(),th=Math.tan(fov/2),asp=rc.width/rc.height;
+  return{o:b.eye,d:v3.norm(v3.add(v3.add(b.f,v3.mul(b.r,nx*th*asp)),v3.mul(b.u,ny*th))),f:b.f};
+}
+function pickBottle(ray){
+  let best=null,bt=1e9;
+  E.bottles.forEach(b=>{
+    const p0=M4.pt(b.xf.M,[0,-BH,0]),p1=M4.pt(b.xf.M,[0,2,0]),s=v3.sub(p1,p0),w0=v3.sub(ray.o,p0);
+    const bb=v3.dot(ray.d,s),c=v3.dot(s,s),dd=v3.dot(ray.d,w0),e=v3.dot(s,w0),den=c-bb*bb;
+    let ts=den>1e-6?(e-bb*dd)/den:0;ts=Math.max(0,Math.min(1,ts));
+    const q=v3.add(p0,v3.mul(s,ts)),tr_=v3.dot(v3.sub(q,ray.o),ray.d);
+    if(tr_<0)return;
+    const pt=v3.add(ray.o,v3.mul(ray.d,tr_));
+    if(v3.len(v3.sub(pt,q))<=4.2&&tr_<bt){bt=tr_;best={b,t:tr_};}
+  });
+  return best;
+}
+function pickTool(ray){
+  let best=null,bt=1e9;
+  tools.forEach(tl=>{const t=v3.dot(v3.sub(tl.c,ray.o),ray.d);if(t<0)return;const pt=v3.add(ray.o,v3.mul(ray.d,t));if(v3.len(v3.sub(pt,tl.c))<=tl.r&&t<bt){bt=t;best=tl;}});
+  return{tl:best,t:bt};
+}
+const ptrs=new Map();let pinch=0;
+canvas.addEventListener('pointerdown',e=>{
+  canvas.setPointerCapture(e.pointerId);
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===2){const a=[...ptrs.values()];pinch=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);E.drag=null;P.active=false;return;}
+  const ray=rayAt(e),pb=pickBottle(ray),pt=pickTool(ray);
+  if(pb&&(!pt.tl||pb.t<pt.t)){
+    const hit=v3.add(ray.o,v3.mul(ray.d,pb.t));
+    E.drag={b:pb.b,id:e.pointerId,moved:false,sx:e.clientX,sy:e.clientY,pn:ray.f,ph:hit,off:v3.sub(pb.b.pos,hit),target:pb.b.pos.slice(),pouring:false};
+    K.sel=pb.b.key;P.active=true;E.poured=false;updHand();
+  }else if(pt.tl){pt.tl.fn();E.dirty=true;}
+  canvas.style.cursor='grabbing';
+});
+canvas.addEventListener('pointermove',e=>{
+  const old=ptrs.get(e.pointerId);if(!old)return;
+  const dx=e.clientX-old.x,dy=e.clientY-old.y;old.x=e.clientX;old.y=e.clientY;
+  if(ptrs.size===2){const a=[...ptrs.values()],d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);if(pinch>0)E.cam.dist=Math.max(25,Math.min(240,E.cam.dist*pinch/d));pinch=d;return;}
+  const dr=E.drag;
+  if(dr&&dr.id===e.pointerId){
+    if(Math.hypot(e.clientX-dr.sx,e.clientY-dr.sy)>6)dr.moved=true;
+    const ray=rayAt(e);
+    let over=false;
+    if(dr.moved&&ray.d[1]<-.01&&tot()<HMAX-.0005){
+      const t=(PY-ray.o[1])/ray.d[1];
+      if(t>0){const q=v3.add(ray.o,v3.mul(ray.d,t)),ddx=q[0]-CX,ddz=q[2]-CZ,dd=Math.hypot(ddx,ddz);
+        if(dd<RC+2){over=true;const k=dd>RC-2.5?(RC-2.5)/dd:1;dr.target=[CX+ddx*k,PY,CZ+ddz*k];}}
+    }
+    if(!over){
+      const den=v3.dot(ray.d,dr.pn);
+      if(Math.abs(den)>1e-6){const t=v3.dot(v3.sub(dr.ph,ray.o),dr.pn)/den;const q=v3.add(ray.o,v3.mul(ray.d,t));dr.target=v3.add(q,dr.off);dr.target[1]=Math.max(dr.target[1],14);}
+    }
+    dr.pouring=over;
+  }else if(!E.drag){
+    E.cam.yaw-=dx*.006;E.cam.pitch=Math.max(.05,Math.min(1.5,E.cam.pitch+dy*.005));E.tween=null;
+  }
+});
+function up(e){
+  ptrs.delete(e.pointerId);pinch=0;canvas.style.cursor='grab';
+  const dr=E.drag;
+  if(dr&&dr.id===e.pointerId){
+    E.drag=null;P.active=false;E.dirty=true;
+    if(!dr.moved)msg('<b>'+LQ[dr.b.key].name+'</b> is in hand. Drag it over the container, or hold "Hold to pour".');
+    else if(E.poured)msg((contamMsg()||'✓ Poured.')+' Now measure h with the vernier in ②, then read the dark circle in ③.');
+    else msg('Take the bottle <b>over the inside of the container</b> — only then will it pour.');
+  }
+}
+canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+canvas.addEventListener('wheel',e=>{e.preventDefault();E.cam.dist=Math.max(25,Math.min(240,E.cam.dist*Math.exp(e.deltaY*.001)));E.tween=null;},{passive:false});
+
+/* --- per-frame update --- */
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+let lastVP=null;
+E.toScreen=p=>{if(!lastVP)return null;const m=lastVP,x=m[0]*p[0]+m[4]*p[1]+m[8]*p[2]+m[12],y=m[1]*p[0]+m[5]*p[1]+m[9]*p[2]+m[13],w=m[3]*p[0]+m[7]*p[1]+m[11]*p[2]+m[15],r=canvas.getBoundingClientRect();return[r.left+(x/w*.5+.5)*r.width,r.top+(.5-y/w*.5)*r.height];};
+let last=performance.now(),lastPanel=0,wasPouring=false;
+function updateScene(dt,now){
+  // camera tween
+  if(E.tween){const tw=E.tween;tw.t=Math.min(1,tw.t+dt/.9);const e=ease(tw.t),c=E.cam,f=tw.from,t=tw.to;
+    c.yaw=f.yaw+(t.yaw-f.yaw)*e;c.pitch=f.pitch+(t.pitch-f.pitch)*e;c.dist=f.dist+(t.dist-f.dist)*e;c.t=[0,1,2].map(i=>f.t[i]+(t.t[i]-f.t[i])*e);if(tw.t>=1)E.tween=null;}
+  // active bottle
+  let act=null,pouring=false,tgt=null;
+  if(E.drag){act=E.drag.b;pouring=E.drag.pouring;tgt=E.drag.target;}
+  else if(P.hold&&K.sel){act=E.bottles.find(b=>b.key===K.sel);pouring=true;tgt=[CX+3,PY,CZ+2];}
+  if(pouring){
+    if(addLiquid(RATE*dt)==='full'){P.hold=false;if(E.drag)E.drag.pouring=false;pouring=false;msg('The container is full (max ≈ 5.5 cm).');}
+    T.hs=tot();
+  }else{const t=tot(),d=t-T.hs;if(Math.abs(d)>.0015)T.hs+=d*.12+Math.sign(d)*.002;else T.hs=t;}
+  E.bottles.forEach(b=>{
+    const isAct=b===act;
+    const want=isAct?tgt:[b.home[0],b.home[1]+(K.sel===b.key?2:0),b.home[2]];
+    const k=Math.min(1,dt*(isAct?14:9));
+    for(let i=0;i<3;i++)b.pos[i]+=(want[i]-b.pos[i])*k;
+    const wr=isAct&&pouring?2.2:0;b.rz+=(wr-b.rz)*Math.min(1,dt*10);
+    b.xf.M=M4.mul(M4.T(b.pos[0],b.pos[1],b.pos[2]),M4.Rz(b.rz));b.xf.NM=M4.n3(M4.Rz(b.rz));
+    b.cap.vis=!(isAct&&b.rz>.4);
+  });
+  // container tilt (drain) / pop (wipe)
+  let ang=0;
+  if(E.tilt>=0){E.tilt+=dt;const u=Math.min(E.tilt/1.7,1);ang=-.95*Math.sin(Math.PI*u);if(u>=1){E.tilt=-1;ang=0;}}
+  let sc=1;if(E.pop>=0){E.pop+=dt;const u=Math.min(E.pop/.5,1);sc=1+.04*Math.sin(Math.PI*u);if(u>=1)E.pop=-1;}
+  const Rz=M4.Rz(ang);
+  cont.M=M4.mul(M4.T(CX+CRW,0,CZ),M4.mul(Rz,M4.mul(M4.S(sc,sc,sc),M4.T(-CRW,0,0))));cont.NM=M4.n3(Rz);
+  tissuePuff.M=M4.T(-22,5+(E.pop>=0?1.5*Math.sin(Math.PI*Math.min(E.pop/.5,1)):0),20);
+  // liquid
+  const h=T.hs,dk=domKey(),n=nEff(),ic=Math.asin(1/n);
+  liqObj.vis=h>.005;
+  liqObj.M=M4.mul(M4.T(0,.5,0),M4.S(1,Math.max(h,1e-3),1));
+  if(dk){const f=LQ[T.mix[dk].key].fill;liqObj.col=[f[0]*.85,f[1]*.85,f[2]*.85];liqObj.alpha=T.mix[dk].key==='water'?.42:.58;}
+  const ce=ctr(),sp=[ce.x,.52,-ce.y],still=Math.abs(ang)<.02;
+  const showCone=$('chkRays').checked&&h>.1;
+  const rc=h*Math.tan(ic);
+  const cm=M4.mul(M4.T(sp[0],.52,sp[2]),M4.S(rc,h,rc));
+  coneObj.vis=coneLn.vis=showCone;coneObj.M=coneLn.M=cm;
+  const mirror=[CX,18,CZ],spotW=[CX+sp[0],.55,CZ+sp[2]];
+  seg(beam1,[CX+30,18,CZ],mirror,.2);
+  if(still){seg(beam2,mirror,spotW,.2);spotG.vis=true;spotG.M=M4.mul(M4.T(spotW[0],.56,spotW[2]),M4.S(.55,1,.55));}
+  else{beam2.vis=false;spotG.vis=false;}
+  const topv=E.cam.pitch>1.2;
+  mirrorParts.forEach(o=>o.vis=!topv);if(topv){beam1.vis=false;beam2.vis=false;}
+  updPaper();
+  // stream
+  if(pouring&&act){
+    const sy=.5+h+.02,m=act.pos;
+    seg(stream,[m[0],m[1]-.2,m[2]],[m[0],Math.min(sy,m[1]-.5),m[2]],.3);
+    const f=LQ[K.sel].fill;stream.col=[f[0],f[1],f[2]];stream.vis=true;
+    ripple.vis=true;const rr=.9+.35*Math.sin(now/90);ripple.M=M4.mul(M4.T(m[0],sy+.02,m[2]),M4.S(rr,1,rr));
+  }else{stream.vis=false;ripple.vis=false;}
+  // panels
+  if(pouring){wasPouring=true;if(now-lastPanel>140){lastPanel=now;drawTop();updHand();}}
+  else if(wasPouring){wasPouring=false;E.dirty=true;}
+  const settled=Math.abs(tot()-T.hs)<.0015&&E.tilt<0&&E.pop<0&&!pouring&&!E.drag;
+  if(E.dirty&&settled){E.dirty=false;renderLab();}
+}
+
+/* --- draw --- */
+function setObj(o,vp){
+  let M=o.M,NM=o.NM;
+  if(o.parent){M=M4.mul(o.parent.M,o.M);NM=M4.m3mul(o.parent.NM,o.NM);}
+  gl.uniformMatrix4fv(U.uM,false,new Float32Array(M));
+  gl.uniformMatrix3fv(U.uNM,false,new Float32Array(NM));
+  gl.uniform3fv(U.uCol,o.col);gl.uniform1f(U.uAlpha,o.alpha);gl.uniform1f(U.uSpec,o.spec);gl.uniform1f(U.uRefl,o.refl);
+  gl.uniform1f(U.uUnlit,o.unlit);gl.uniform1f(U.uEmis,o.emis);gl.uniform1f(U.uRim,o.rim);gl.uniform1f(U.uTex,o.tex?o.texMode:0);
+  if(o.tex){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,o.tex);}
+  const m=o.mesh;
+  gl.bindBuffer(gl.ARRAY_BUFFER,m.vb);gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,m.ib);
+  gl.vertexAttribPointer(0,3,gl.FLOAT,false,32,0);gl.vertexAttribPointer(1,3,gl.FLOAT,false,32,12);gl.vertexAttribPointer(2,2,gl.FLOAT,false,32,24);
+  gl.drawElements(m.mode,m.n,gl.UNSIGNED_SHORT,0);
+  return M;
+}
+function draw(){
+  gl.viewport(0,0,canvas.width,canvas.height);
+  gl.clearColor(.04,.05,.08,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  const b=camBasis(),proj=M4.persp(fov,canvas.width/canvas.height,1,600),vp=M4.mul(proj,M4.look(b.eye,E.cam.t));
+  lastVP=vp;gl.uniformMatrix4fv(U.uVP,false,new Float32Array(vp));gl.uniform3fv(U.uEye,b.eye);
+  gl.enable(gl.DEPTH_TEST);gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);
+  const vis=objs.filter(o=>o.vis),op=[],tr_=[];
+  vis.forEach(o=>((o.alpha>=.999&&!o.glass&&o.rim===0)?op:tr_).push(o));
+  gl.disable(gl.BLEND);gl.depthMask(true);
+  op.forEach(o=>{if(o.dbl)gl.disable(gl.CULL_FACE);else gl.enable(gl.CULL_FACE);setObj(o);});
+  gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);gl.depthMask(false);
+  tr_.forEach(o=>{const M=o.parent?M4.mul(o.parent.M,o.M):o.M;o._d=v3.len(v3.sub([M[12],M[13],M[14]],b.eye));});
+  tr_.sort((a,c)=>c._d-a._d);
+  tr_.forEach(o=>{
+    if(o.glass){gl.enable(gl.CULL_FACE);gl.cullFace(gl.FRONT);setObj(o);gl.cullFace(gl.BACK);setObj(o);}
+    else{if(o.dbl)gl.disable(gl.CULL_FACE);else gl.enable(gl.CULL_FACE);gl.cullFace(gl.BACK);setObj(o);}
+  });
+  gl.depthMask(true);
+}
+function loop(now){
+  if(!wrap.offsetParent){last=now;requestAnimationFrame(loop);return;}
+  const dt=Math.min(.1,(now-last)/1000||.016);last=now;
+  updateScene(dt,now);draw();requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+E.goView=goView;
+})();
+
+/* ============================================================
+   APP FLOW: cover → manual → lab → calculations → graph → result
+   ============================================================ */
+const S={name:'',cls:'',date:'',stage:0,max:0,quizOK:false,rows:[],nid:1,calc:{},mean:{},G:{},cur:null,reveal:false,err:{dh:'',dr:'',lcOK:false,rows:{},liq:{},gr:{}}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const STEPS=['Manual','Lab','Calculations','Graph','Error analysis','Result'];
+function buildSteps(){
+  $('steps').innerHTML=STEPS.map((s,i)=>'<button class="stp" data-st="'+(i+1)+'"><b>Step '+(i+1)+'</b>'+s+'</button>').join('');
+  document.querySelectorAll('.stp').forEach(b=>b.onclick=()=>go(+b.dataset.st));
+}
+function paintSteps(){document.querySelectorAll('.stp').forEach(b=>{const n=+b.dataset.st;b.classList.toggle('on',S.stage===n);b.classList.toggle('done',n<S.max&&S.stage!==n);b.disabled=n>S.max;});}
+function unlock(n){if(n>S.max)S.max=n;paintSteps();}
+function go(n){
+  if(n>S.max)return;
+  S.stage=n;
+  for(let i=0;i<=6;i++)$('s'+i).hidden=i!==n;
+  $('topbar').hidden=n===0;
+  paintSteps();window.scrollTo(0,0);
+  if(n===2)requestAnimationFrame(()=>{window.dispatchEvent(new Event('resize'));renderLab();});
+  if(n===3)renderCalc();
+  if(n===4)renderGraphStage();
+  if(n===5)renderErr();
+  if(n===6)renderResult();
+}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(+b.dataset.go));
+window.addEventListener('resize',()=>{if(S.stage===2)renderLab();if(S.stage===4)drawGraph();});
+
+/* ---------- stage 0 : cover ---------- */
+$('inDate').value=new Date().toISOString().slice(0,10);
+function chkStart(){const ok=$('inName').value.trim().length>=2;$('bStart').disabled=!ok;$('startNote').textContent=ok?'Ready! Start the experiment.':'Enter your name to continue.';}
+$('inName').oninput=chkStart;
+$('inName').addEventListener('keydown',e=>{if(e.key==='Enter'&&!$('bStart').disabled)$('bStart').click();});
+$('bStart').onclick=()=>{
+  S.name=$('inName').value.trim();S.cls=$('inCls').value.trim();S.date=$('inDate').value;
+  $('whoName').textContent=S.name;$('whoCls').textContent=S.cls?'· '+S.cls:'';$('whoDate').textContent=S.date;
+  unlock(1);go(1);
+};
+
+/* ---------- stage 1 : manual + pre-lab quiz ---------- */
+const QZ=[
+ {q:'Light travels from the liquid towards air. Total internal reflection occurs when the angle of incidence is:',o:['i < i_c','i > i_c','i = 0°','r < i'],a:1,e:'TIR occurs only when i is greater than the critical angle i_c — the refracted ray (r beyond 90°) is then impossible.'},
+ {q:'Why does a dark circle form on the LASER board?',o:['Rays with incidence angle less than i_c refract out through the surface and do not return to the bottom','The liquid absorbs the laser light','Porcelain does not reflect light','It is the shadow of the mirror'],a:0,e:'Rays with i < i_c are refracted out, so the region around the scattering centre is not illuminated.'},
+ {q:'For the same liquid, when h is doubled the diameter D of the dark circle:',o:['becomes half','stays the same','doubles','becomes four times'],a:2,e:'D = 4h tan i_c, so D ∝ h.'},
+ {q:'How is the refractive index μ obtained from the critical angle i_c?',o:['μ = sin i_c','μ = 1 / sin i_c','μ = cos i_c','μ = tan i_c'],a:1,e:'By Snell\'s law, μ = sin 90° / sin i_c = 1 / sin i_c.'},
+ {q:'Which of these is correct LASER safety practice?',o:['Looking directly at the beam','Placing shiny (reflecting) objects in the beam path','Never pointing the beam towards anyone\'s eyes or face','Adjusting the mirror by hand while the laser is ON'],a:2,e:'A LASER beam (or its reflection) can permanently damage the eye.'}
+];
+$('quiz').innerHTML=QZ.map((q,i)=>'<div class="q" data-q="'+i+'"><p>'+(i+1)+'. '+esc(q.q)+'</p>'+q.o.map((o,j)=>'<label><input type="radio" name="q'+i+'" value="'+j+'"> '+esc(o)+'</label>').join('')+'<div class="fb"></div></div>').join('');
+function gateLab(){
+  const ok=S.quizOK&&$('chkRead').checked;$('bToLab').disabled=!ok;
+  $('labNote').textContent=ok?'All set — go to the lab.':'To enter the lab: score at least 4/5 in the quiz and tick "I have read the manual".';
+}
+$('chkRead').onchange=gateLab;
+$('bQuiz').onclick=()=>{
+  let sc=0,ans=0;
+  QZ.forEach((q,i)=>{
+    const sel=document.querySelector('input[name=q'+i+']:checked'),box=document.querySelector('.q[data-q="'+i+'"] .fb');
+    if(!sel){box.innerHTML='<span class="warn">Select an answer.</span>';return;}
+    ans++;const ok=+sel.value===q.a;if(ok)sc++;
+    box.innerHTML=ok?'<span class="good">✓ Correct.</span> '+esc(q.e):'<span class="bad">✗ Wrong.</span> Think again (see the manual).';
+  });
+  $('quizRes').innerHTML=ans<QZ.length?'Answer all the questions first.':'Score: <b>'+sc+' / '+QZ.length+'</b>'+(sc>=4?' — passed ✓':' — at least 4 correct needed, try again.');
+  S.quizOK=ans===QZ.length&&sc>=4;gateLab();
+};
+$('bToLab').onclick=()=>{unlock(2);go(2);};
+
+/* ---------- stage 2 : lab ---------- */
+const groupsRows=()=>{const g={};S.rows.forEach(r=>{(g[r.key]=g[r.key]||[]).push(r);});return g;};
+function renderTrack(){
+  const g=groupsRows(),cnt=Object.values(g).map(a=>a.length),maxc=cnt.length?Math.max(...cnt):0,liq3=cnt.filter(n=>n>=3).length;
+  const st=[
+    ['1 · Apparatus arranged + beam on the hole',aligned()],
+    ['2 · h measured with vernier',S.rows.length>0||Hm.hdiv!=null],
+    ['3 · R read in two directions',S.rows.length>0],
+    ['4 · ≥3 different heights ('+maxc+'/3)',maxc>=3],
+    ['5 · A second liquid too ('+liq3+' liquid(s) with ≥3 readings)',liq3>=2]
+  ];
+  $('track').innerHTML=st.map(s=>'<div class="'+(s[1]?'ok':'')+'">'+(s[1]?'✓ ':'○ ')+s[0]+'</div>').join('');
+  $('bToCalc').disabled=maxc<3;
+  $('calcNote').textContent=maxc>=3?'Ready. You may take more liquids/heights, then go to Calculations.':'You need readings at 3 different heights for at least one liquid.';
+}
+function renderLab(){
+  if(S.stage!==2)return;
+  updHand();renderTrack();drawVernier();drawTop();readoutBeam();renderObs();
+}
+
+/* ---------- vernier callipers: student slides the rod, locks it and reads the scale ---------- */
+let vmsg='';
+const vS={val:0,zoom:12,s:40};            /* val in units of 0.1 mm (0.01 cm) */
+const vTrue=()=>Math.round(tot()*100);
+function steel(c,x,y,w,h,vert,seed){
+  const g=vert?c.createLinearGradient(x,0,x+w,0):c.createLinearGradient(0,y,0,y+h);
+  g.addColorStop(0,'#f3f6f9');g.addColorStop(.28,'#cfd6dd');g.addColorStop(.6,'#aab3bc');g.addColorStop(1,'#dfe4e9');
+  c.fillStyle=g;c.fillRect(x,y,w,h);
+  if(!vert&&h>14){c.lineWidth=.5;for(let i=0;i<Math.min(46,h*1.2);i++){const yy=y+hn((seed||1)*7.3+i)*h;c.strokeStyle='rgba(255,255,255,'+(0.10+hn(i*3.1+(seed||1))*.12)+')';c.beginPath();c.moveTo(x,yy);c.lineTo(x+w,yy);c.stroke();}c.lineWidth=1;}
+}
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function gaugeInset(c,w,H){
+  const ps=(H-40)/6.2,base=H-14,cw=Math.min(170,w*.42),cx=Math.max(cw/2+14,w*.27);
+  /* container cross-section */
+  c.fillStyle='#e9e4d6';c.beginPath();c.moveTo(cx-cw/2-6,base-6.2*ps);c.lineTo(cx-cw/2+4,base+6);c.lineTo(cx+cw/2-4,base+6);c.lineTo(cx+cw/2+6,base-6.2*ps);c.lineTo(cx+cw/2,base-6.2*ps);c.lineTo(cx+cw/2-8,base);c.lineTo(cx-cw/2+8,base);c.lineTo(cx-cw/2,base-6.2*ps);c.closePath();c.fill();
+  const key=domLiq(),f=key?LQ[key].fill:[.5,.72,1],hl=tot(),yt=base-hl*ps;
+  if(hl>0.02){c.fillStyle='rgba('+Math.round(f[0]*255)+','+Math.round(f[1]*255)+','+Math.round(f[2]*255)+',.55)';c.fillRect(cx-cw/2+7.2*(hl/6.2)*0+2,yt,cw-4,base-yt);c.strokeStyle='rgba(255,255,255,.7)';c.beginPath();c.moveTo(cx-cw/2+2,yt);c.lineTo(cx+cw/2-2,yt);c.stroke();}
+  /* gauge */
+  const gx=cx+cw*.18,rod=vS.val/100,tip=base-rod*ps;
+  steel(c,gx-16,base-4,32,4,false);                                   /* base plate on the bottom */
+  steel(c,gx-4,base-5.8*ps,8,5.8*ps,true);c.strokeStyle='#6b7480';c.strokeRect(gx-3.5,base-5.8*ps,7,5.8*ps);   /* beam */
+  steel(c,gx+4,tip,3.5,base-tip-4,true);                              /* depth rod (sliding) */
+  steel(c,gx-8,tip-12,16,12,false);c.strokeStyle='#59636e';c.strokeRect(gx-7.5,tip-11.5,15,11); /* sliding head */
+  const d=vS.val-hl*100,touch=hl>0.02&&Math.abs(d)<=1.5;
+  if(touch){c.strokeStyle='rgba(255,255,255,.9)';c.beginPath();c.ellipse(gx+5.7,yt,9,2.5,0,0,7);c.stroke();}
+  c.fillStyle='#d9421e';c.beginPath();c.arc(gx+5.7,tip,2.2,0,7);c.fill();
+  /* text */
+  c.font='11px system-ui';c.textAlign='left';c.fillStyle='#93aab0';
+  const tx=cx+cw/2+18,L=w<520?['Depth gauge: base on the','container bottom. Raise the','rod till its tip just touches','the liquid surface, lock the','screw and read the scale.']:['Depth gauge: its base stands on the container bottom.','Raise the rod until its tip just touches the liquid surface,','then tighten the lock screw and read the vernier scale below.'];
+  L.forEach((t,i)=>c.fillText(t,tx,22+i*15));
+  c.font='bold 12px system-ui';
+  if(Hm.hdiv!=null){c.fillStyle='#6ee7a8';c.fillText(w<520?'✓ Locked — read scale':'✓ Screw locked — read the scale',tx,22+L.length*15+8);}
+  else if(hl<0.15){c.fillStyle='#f3c477';c.fillText(w<520?'Container empty':'Container is (almost) empty',tx,22+L.length*15+8);}
+  else if(touch){c.fillStyle='#6ee7a8';c.fillText(w<520?'● Touching surface':'● Tip is touching the surface',tx,22+L.length*15+8);}
+  else if(d<0){c.fillStyle='#f3c477';c.fillText(w<520?'Tip below surface ↑':'Tip is below the surface — raise it',tx,22+L.length*15+8);}
+  else{c.fillStyle='#f3c477';c.fillText(w<520?'Tip above surface ↓':'Tip is above the surface — lower it',tx,22+L.length*15+8);}
+}
+function drawVernier(){
+  const H=596,{c,w,h}=setup($('cvV2'),H);
+  const bg=c.createLinearGradient(0,0,0,h);bg.addColorStop(0,'#0c1b22');bg.addColorStop(1,'#12262f');c.fillStyle=bg;c.fillRect(0,0,w,h);
+  if(Hm.hdiv!=null&&Hm.sig!==lvlSig()){Hm.hdiv=null;Hm.hint=false;vmsg='<span class="warn">The liquid level has changed — slide the rod again and re-lock.</span>';}
+  const locked=Hm.hdiv!=null;
+  $('bMeas').textContent=locked?'Loosen the screw (measure again)':'Tighten the lock screw & read h';
+  const off=124;gaugeInset(c,w,off);
+  c.strokeStyle='rgba(255,255,255,.08)';c.beginPath();c.moveTo(12,off+2);c.lineTo(w-12,off+2);c.stroke();
+  const mm=vS.val/10,cm=mm/10;
+  /* ---------- whole instrument ---------- */
+  const s=(w-76)/18,xj=40,xb=xj+11*s,xs=xj+cm*s,sw=Math.max(58,3.3*s),by=off+46,bh=26;vS.s=s;
+  c.fillStyle='rgba(0,0,0,.28)';c.fillRect(xj-10,by+bh+4,xb-xj+10+cm*s,5);
+  steel(c,xb-8,by+14,8+cm*s,6,false,2);c.strokeStyle='#6b7480';c.strokeRect(xb-7.5,by+14.5,7+cm*s,5);
+  steel(c,xj-12,by,xb-xj+12,bh,false,3);c.strokeStyle='#6b7480';c.lineWidth=1;c.strokeRect(xj-11.5,by+.5,xb-xj+11,bh-1);
+  c.fillStyle='#1b2630';c.strokeStyle='#1b2630';c.font='9px system-ui';c.textAlign='center';
+  for(let k=0;k<=110;k++){const x=xj+k*s/10;if(s<40&&k%5)continue;const L=k%10===0?9:k%5===0?6:4;c.beginPath();c.moveTo(x,by+bh);c.lineTo(x,by+bh-L);c.stroke();if(k%10===0)c.fillText(k/10,x,by+bh-11);}
+  steel(c,xj-12,by+bh,12,58,true);c.strokeStyle='#6b7480';c.strokeRect(xj-11.5,by+bh+.5,11,57);
+  c.fillStyle='#8c96a1';c.beginPath();c.moveTo(xj-12,by+bh+58);c.lineTo(xj,by+bh+58);c.lineTo(xj,by+bh+70);c.closePath();c.fill();
+  rr(c,xs,by-12,sw,bh+24,5);steel(c,xs,by-12,sw,bh+24,false,5);c.strokeStyle=locked?'#d9421e':'#59636e';c.lineWidth=locked?2:1.2;rr(c,xs+.5,by-11.5,sw-1,bh+23,5);c.stroke();c.lineWidth=1;
+  c.fillStyle='#1b2630';c.strokeStyle='#1b2630';
+  for(let k=0;k<=10;k++){const x=xs+k*0.9*s/10;c.beginPath();c.moveTo(x,by+bh+4);c.lineTo(x,by+bh+4-(k%5?3:5));c.stroke();}
+  steel(c,xs,by+bh+12,12,46,true);c.strokeStyle='#6b7480';c.strokeRect(xs+.5,by+bh+12.5,11,45);
+  c.fillStyle='#8c96a1';c.beginPath();c.moveTo(xs,by+bh+58);c.lineTo(xs+12,by+bh+58);c.lineTo(xs,by+bh+70);c.closePath();c.fill();
+  c.fillStyle='#2b3640';rr(c,xs+sw-22,by-17,18,8,3);c.fill();
+  c.fillStyle=locked?'#d9421e':'#d4dae0';c.beginPath();c.arc(xs+sw-35,by-8,6,0,7);c.fill();c.strokeStyle='#59636e';c.stroke();c.beginPath();c.moveTo(xs+sw-39,by-8);c.lineTo(xs+sw-31,by-8);c.stroke();
+  c.font='11px system-ui';c.fillStyle='#93aab0';c.textAlign='left';c.fillText('fixed jaw',Math.max(2,xj-12),by-6);c.textAlign='center';c.fillText('depth rod',xb+cm*s/2+4,by+44);c.fillText(locked?'vernier slide (locked)':'vernier slide — drag me',xs+sw/2,by-18);
+  /* ---------- magnified scale ---------- */
+  const Y0=by+bh+88,pw=w-24,ph=h-Y0-6,x0=12;
+  c.fillStyle='rgba(243,196,119,.08)';c.strokeStyle='rgba(243,196,119,.55)';
+  c.beginPath();c.moveTo(xs-3,by+bh-2);c.lineTo(xs+.9*s+3,by+bh-2);c.lineTo(x0+pw,Y0);c.lineTo(x0,Y0);c.closePath();c.fill();c.stroke();c.strokeRect(xs-3,by+bh-9,.9*s+6,13);
+  c.save();rr(c,x0,Y0,pw,ph,10);c.clip();
+  c.fillStyle='#10202a';c.fillRect(x0,Y0,pw,ph);
+  const win=vS.zoom,pxmm=(pw-16)/win,Lm=mm-win*.16,X=m=>x0+8+(m-Lm)*pxmm;
+  const sh=Math.round(ph*0.47),yb=Y0+4+sh;
+  steel(c,x0,Y0+4,pw,sh,false,7);steel(c,x0,yb,pw,ph-sh-8,false,9);
+  c.fillStyle='rgba(0,0,0,.35)';c.fillRect(x0,yb-1,pw,2);c.fillStyle='rgba(255,255,255,.35)';c.fillRect(x0,yb+1,pw,1);
+  /* main scale */
+  c.strokeStyle='#141d24';c.fillStyle='#141d24';c.textAlign='center';
+  for(let m=Math.max(0,Math.floor(Lm));m<=Math.ceil(Lm+win);m++){const x=X(m),L=m%10===0?sh*.42:m%5===0?sh*.30:sh*.20;c.lineWidth=m%10===0?2:1.2;c.beginPath();c.moveTo(x,yb-1);c.lineTo(x,yb-1-L);c.stroke();if(m%10===0){c.font='bold '+Math.round(Math.min(22,sh*.24))+'px system-ui';c.fillText(m/10,x,yb-L-6);}}
+  c.font='10px system-ui';c.textAlign='left';c.fillStyle='#4a5560';c.fillText(pw<520?'MAIN SCALE · 1 div = 1 mm':'MAIN SCALE · 1 division = 1 mm (numbers are in cm)',x0+8,Y0+17);
+  /* vernier scale */
+  c.strokeStyle='#141d24';c.fillStyle='#141d24';c.textAlign='center';
+  const yv=yb+1,vl=Math.min(34,(ph-sh-8)*.42);
+  for(let k=0;k<=10;k++){const x=X(mm+0.9*k);c.lineWidth=k%5?1.2:2;c.beginPath();c.moveTo(x,yv);c.lineTo(x,yv+(k%5?vl*.62:vl));c.stroke();c.font='bold '+Math.round(Math.min(16,vl*.5))+'px system-ui';c.fillText(k,x,yv+vl+17);}
+  c.font='10px system-ui';c.textAlign='left';c.fillStyle='#4a5560';c.fillText(pw<520?'VERNIER · 10 div = 9 mm':'VERNIER SCALE · 10 divisions = 9 mm · L.C. = 0.01 cm',x0+8,Y0+ph-9);
+  /* zero index */
+  c.fillStyle='#d9421e';c.beginPath();c.moveTo(X(mm),yb+1);c.lineTo(X(mm)-5,yb+11);c.lineTo(X(mm)+5,yb+11);c.closePath();c.fill();
+  if(Hm.hint&&locked){const k=Hm.hdiv%10,xk=X(mm+0.9*k);c.strokeStyle='rgba(217,66,30,.9)';c.lineWidth=2.4;c.beginPath();c.moveTo(xk,Y0+8);c.lineTo(xk,yb+vl+4);c.stroke();}
+  const gl=c.createLinearGradient(x0,Y0,x0,Y0+ph);gl.addColorStop(0,'rgba(255,255,255,.16)');gl.addColorStop(.35,'rgba(255,255,255,0)');c.fillStyle=gl;c.fillRect(x0,Y0,pw,ph);
+  c.restore();c.strokeStyle='#f3c477';c.lineWidth=1.5;rr(c,x0,Y0,pw,ph,10);c.stroke();
+  $('vSlide').value=vS.val;$('vVal').textContent=(vS.val/100).toFixed(2)+' cm';
+  $('rdV').innerHTML=!locked?(vmsg||'Slide the rod (drag the slide, use the slider or the buttons) until its tip just touches the liquid surface, then tighten the lock screw. Then read: <b>MSR</b> and <b>VSD</b>.'):(Hm.hint?'Hint: MSR = <b>'+Math.floor(Hm.hdiv/10)+' mm</b>, coinciding VSD = <b>'+(Hm.hdiv%10)+'</b> → h = '+(Math.floor(Hm.hdiv/10)/10).toFixed(1)+' + '+(Hm.hdiv%10)+'×0.01 = <b>'+(Hm.hdiv/100).toFixed(2)+' cm</b> (hint used — noted in the report).':'Reading: the main-scale line just before the vernier zero (red arrow) is the MSR in mm; the vernier line that coincides exactly with a main-scale line is the VSD. h = MSR + VSD × 0.01 cm. Use the magnifier slider for a closer look.');
+}
+function setVal(v){if(Hm.hdiv!=null)return;vS.val=Math.max(0,Math.min(600,Math.round(v)));vmsg='';drawVernier();}
+$('vSlide').oninput=e=>setVal(+e.target.value);
+$('bVm10').onclick=()=>setVal(vS.val-10);$('bVm1').onclick=()=>setVal(vS.val-1);$('bVp1').onclick=()=>setVal(vS.val+1);$('bVp10').onclick=()=>setVal(vS.val+10);
+$('vZoom').oninput=e=>{vS.zoom=+e.target.value;drawVernier();};
+(function(){const cv=$('cvV2');let dr=null;cv.style.touchAction='pan-y';
+  cv.addEventListener('pointerdown',e=>{const r=cv.getBoundingClientRect(),y=e.clientY-r.top;if(y>124&&y<124+46+26+80){dr={x:e.clientX,v:vS.val};try{cv.setPointerCapture(e.pointerId);}catch(_){}cv.style.cursor='grabbing';}});
+  cv.addEventListener('pointermove',e=>{if(dr)setVal(dr.v+(e.clientX-dr.x)/vS.s*100);});
+  ['pointerup','pointercancel'].forEach(t=>cv.addEventListener(t,()=>{dr=null;cv.style.cursor='default';}));})();
+$('bMeas').onclick=()=>{
+  if(Hm.hdiv!=null){Hm.hdiv=null;Hm.hint=false;vmsg='';drawVernier();renderTrack();return;}
+  const t=tot();
+  if(t<0.15){vmsg='There is no liquid (or too little) in the container.';return drawVernier();}
+  if(Math.abs(T.hs-t)>0.004||P.active||P.hold){vmsg='Let the liquid settle first.';return drawVernier();}
+  const d=vS.val-vTrue();
+  if(d<-1){vmsg='<span class="warn">The rod tip is still below the liquid surface — raise it until it just touches, then lock.</span>';return drawVernier();}
+  if(d>1){vmsg='<span class="warn">The rod tip is above the liquid surface (there is a gap) — lower it until it just touches, then lock.</span>';return drawVernier();}
+  Hm.hdiv=vS.val;Hm.sig=lvlSig();Hm.hint=false;vmsg='';
+  drawVernier();renderTrack();
+};
+$('bVhint').onclick=()=>{if(Hm.hdiv==null){vmsg='First slide the rod to the surface and lock the screw.';}else Hm.hint=true;drawVernier();};
+
+/* graph paper (top view) + loupe */
+function drawTop(){
+  const cv=$('cvC2'),w0=cv.parentElement.clientWidth||320,hg=Math.round(Math.min(w0,380));
+  const{c,w,h}=setup(cv,hg),px=(Math.min(w,h)/2-8)/RC;V.px=px;
+  const ce=ctr();
+  paintPaper(c,w,h,px,0,0,{lit:T.hs>.04,R:trueR(),ox:ce.x,oy:ce.y,axes:true});
+  if(V.lens){c.strokeStyle='#fbbf24';c.lineWidth=2;c.beginPath();c.arc(w/2+V.lens.x*px,h/2-V.lens.y*px,Math.max(7,.6*px),0,7);c.stroke();c.lineWidth=1;}
+  drawMag();
+}
+function drawMag(){
+  const cv=$('cvM2'),{c,w,h}=setup(cv,200),mp=V.magPx,L=V.lens||{x:5,y:0},ce=ctr();
+  paintPaper(c,w,h,mp,L.x,L.y,{lit:T.hs>.04,R:trueR(),ox:ce.x,oy:ce.y,lab:'xy'});
+  c.strokeStyle='rgba(251,191,36,.9)';c.lineWidth=1;c.beginPath();c.moveTo(w/2-12,h/2);c.lineTo(w/2+12,h/2);c.moveTo(w/2,h/2-12);c.lineTo(w/2,h/2+12);c.stroke();
+  c.font='12px system-ui';lbl(c,'LOUPE · 1 small box = 1 mm · numbers in cm',8,16,'left');
+}
+const cvT=$('cvC2');
+function lensFrom(e){
+  const r=cvT.getBoundingClientRect();let x=(e.clientX-r.left-r.width/2)/V.px,y=-(e.clientY-r.top-r.height/2)/V.px;
+  const d=Math.hypot(x,y);if(d>RC){x*=RC/d;y*=RC/d;}V.lens={x,y};drawTop();
+}
+cvT.addEventListener('pointerdown',e=>{try{cvT.setPointerCapture(e.pointerId);}catch(_){}lensFrom(e);});
+cvT.addEventListener('pointermove',e=>{if(e.buttons>0||e.pointerType==='mouse')lensFrom(e);});
+$('bLensX').onclick=()=>{if(T.hs<.04)return msg('There is no dark circle yet — pour a liquid first.','msgR');V.lens={x:edgeX(),y:0};drawTop();};
+$('bLensY').onclick=()=>{if(T.hs<.04)return msg('There is no dark circle yet — pour a liquid first.','msgR');V.lens={x:0,y:edgeY()};drawTop();};
+$('sMag').oninput=e=>{V.magPx=+e.target.value;drawTop();};
+function readoutBeam(){
+  $('vBx').textContent=K.bx.toFixed(2);$('vBy').textContent=K.by.toFixed(2);
+  $('rdBeam').innerHTML=aligned()?'<span class="good">✓ Beam is on the hole.</span>':'<span class="warn">The beam spot is not on the hole — adjust with the mirror knobs. (The spot is slightly off the hole.)</span>';
+}
+$('sBx').oninput=e=>{K.bx=+e.target.value;E.dirty=true;drawTop();readoutBeam();renderTrack();};
+$('sBy').oninput=e=>{K.by=+e.target.value;E.dirty=true;drawTop();readoutBeam();renderTrack();};
+
+/* observation table (student writes) */
+$('oLiq').innerHTML='<option value="">— liquid —</option>'+ORDER.map(k=>'<option value="'+k+'">'+LQ[k].name+'</option>').join('');
+function renderObs(){
+  if(!S.rows.length){$('tabObs').innerHTML='<div class="note">No reading recorded yet.</div>';return;}
+  let t='<table><tr><th>#</th><th class="l">Liquid</th><th>MSR (mm)</th><th>VSD</th><th>h (cm)</th><th>R₁ (cm)</th><th>R₂ (cm)</th><th class="l">Note</th><th></th></tr>';
+  S.rows.forEach((r,i)=>{t+='<tr><td>'+(i+1)+'</td><td class="l">'+LQ[r.key].name+'</td><td>'+r.msr+'</td><td>'+r.vsd+'</td><td>'+r.h.toFixed(2)+'</td><td>'+r.r1.toFixed(2)+'</td><td>'+r.r2.toFixed(2)+'</td><td class="l">'+(r.mixed?'<span class="warn">contaminated</span> ':'')+(r.hint?'hint':'')+'</td><td><button class="x" data-del="'+r.id+'">✕</button></td></tr>';});
+  $('tabObs').innerHTML=t+'</table>';
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    const id=+b.dataset.del,r=S.rows.find(x=>x.id===id);
+    S.rows=S.rows.filter(x=>x.id!==id);delete S.calc[id];delete S.err.rows[id];if(r)delete S.G[r.key];S.mean={};S.err.liq={};S.err.gr={};renderLab();
+  });
+}
+$('bAdd').onclick=()=>{
+  const out=m=>msg(m,'msgR'),key=$('oLiq').value;
+  const msr=parseFloat($('oMSR').value),vsd=parseFloat($('oVSD').value),h=parseFloat($('oH').value),r1=parseFloat($('oR1').value),r2=parseFloat($('oR2').value);
+  if(!key)return out('First select the liquid (the one in the container).');
+  if(tot()<0.3)return out('There is not enough liquid in the container (at least ~0.5 cm needed).');
+  if(Math.abs(T.hs-tot())>.004||P.active||P.hold)return out('Let the liquid settle.');
+  const dk=domLiq();
+  if(dk!==key)return out('<span class="warn">The container has <b>'+LQ[dk].name+'</b> but you selected <b>'+LQ[key].name+'</b>. Select the correct liquid.</span>');
+  if([msr,vsd,h,r1,r2].some(v=>isNaN(v)))return out('Fill in MSR, VSD, h, R₁ and R₂ — all of them.');
+  if(!aligned())return out('<span class="warn">Step 1: the beam is not on the hole. Align it with the mirror knobs first — otherwise the radius will be read wrongly.</span>');
+  if(Hm.hdiv==null||Hm.sig!==lvlSig())return out('h has not been measured for this level — press "measure h" in ②.');
+  const M=Math.floor(Hm.hdiv/10),VC=Hm.hdiv%10;
+  if(msr!==M||vsd!==VC)return out('<span class="bad">✗ Vernier reading (MSR / VSD) does not match.</span> MSR = the main-scale line (mm) just before the vernier zero; VSD = the vernier line that coincides with a main-scale line. Look again.');
+  if(Math.abs(h-(msr/10+vsd*0.01))>0.0051)return out('<span class="bad">✗ h is calculated wrongly.</span> MSR is in mm but h must be in cm: h = MSR/10 + VSD × 0.01 cm.');
+  if(T.hs<.04)return out('The dark circle has not formed yet (level too low).');
+  if(Math.abs(r1-edgeX())>.15)return out('<span class="bad">✗ R₁ (x-direction) looks wrong.</span> Bring the loupe to the dark-circle edge on the +x axis and read the distance from the hole (0) to the edge.');
+  if(Math.abs(r2-edgeY())>.15)return out('<span class="bad">✗ R₂ (y-direction) looks wrong.</span> Bring the loupe to the dark-circle edge on the +y axis and read it.');
+  if(S.rows.some(r=>r.key===key&&Math.abs(r.h-h)<.025))return out('You have already recorded a reading at this height — change the level (add or remove some liquid).');
+  S.mean={};S.err.liq={};S.err.gr={};delete S.G[key];
+  S.rows.push({id:S.nid++,key,h,msr,vsd,r1,r2,hint:Hm.hint,mixed:Object.keys(T.mix).length>1,nTrue:nEff()});
+  ['oMSR','oVSD','oH','oR1','oR2'].forEach(i=>$(i).value='');
+  Hm.hdiv=null;Hm.hint=false;vmsg='';vS.val=0;
+  out('<span class="good">✓ Reading #'+S.rows.length+' recorded.</span> Now change the level and take the next reading.');
+  renderLab();
+};
+$('bToCalc').onclick=()=>{unlock(3);go(3);};
+
+/* ---------- stage 3 : calculations (student computes) ---------- */
+function exact(r){const Rm=(r.r1+r.r2)/2,ic=Math.atan(Rm/(2*r.h))/RAD;return{Rm,ic,mu:1/Math.sin(ic*RAD)};}
+const TOL={rm:0.011,ic:0.06,mu:0.006};
+function renderCalc(){
+  const rows=S.rows;
+  if(!rows.length){$('calcTab').innerHTML='<div class="note">Take readings in the lab first.</div>';$('meanBox').innerHTML='';return;}
+  let t='<table><tr><th>#</th><th class="l">Liquid</th><th>h (cm)</th><th>R₁</th><th>R₂</th><th>R = (R₁+R₂)/2 (cm)</th><th>i<sub>c</sub> (°)</th><th>μ</th><th></th></tr>';
+  rows.forEach((r,i)=>{
+    const c=S.calc[r.id]||(S.calc[r.id]={rm:'',ic:'',mu:'',st:{},att:0,rev:false,ok:false});
+    t+='<tr data-id="'+r.id+'"><td>'+(i+1)+'</td><td class="l">'+LQ[r.key].name+'</td><td>'+r.h.toFixed(2)+'</td><td>'+r.r1.toFixed(2)+'</td><td>'+r.r2.toFixed(2)+'</td>'+
+      ['rm','ic','mu'].map(f=>'<td><input class="n '+(c.st[f]===true?'ok':c.st[f]===false?'no':'')+'" type="number" step="any" data-f="'+f+'" value="'+c[f]+'"></td>').join('')+
+      '<td><button class="b" data-chk="'+r.id+'">Check</button> '+(c.att>0&&!c.ok&&!c.rev?'<button class="b" data-ans="'+r.id+'">Answer</button>':'')+(c.ok?'<span class="good">✓</span>':c.rev?'<span class="warn">(answer viewed)</span>':'')+'</td></tr>';
+  });
+  $('calcTab').innerHTML=t+'</table>';
+  document.querySelectorAll('#calcTab input').forEach(inp=>inp.oninput=()=>{const id=+inp.closest('tr').dataset.id;S.calc[id][inp.dataset.f]=inp.value;});
+  document.querySelectorAll('[data-chk]').forEach(b=>b.onclick=()=>chkRow(+b.dataset.chk));
+  document.querySelectorAll('[data-ans]').forEach(b=>b.onclick=()=>ansRow(+b.dataset.ans));
+  renderMeans();gateGraph();
+}
+function chkRow(id){
+  const r=S.rows.find(x=>x.id===id),c=S.calc[id],ex=exact(r);
+  const val=f=>parseFloat(c[f]);
+  c.st={rm:Math.abs(val('rm')-ex.Rm)<=TOL.rm,ic:Math.abs(val('ic')-ex.ic)<=TOL.ic,mu:Math.abs(val('mu')-ex.mu)<=TOL.mu};
+  ['rm','ic','mu'].forEach(f=>{if(isNaN(val(f)))c.st[f]=false;});
+  c.att++;c.ok=c.st.rm&&c.st.ic&&c.st.mu;renderCalc();
+}
+function ansRow(id){
+  const r=S.rows.find(x=>x.id===id),c=S.calc[id],ex=exact(r);
+  c.rm=ex.Rm.toFixed(2);c.ic=ex.ic.toFixed(2);c.mu=ex.mu.toFixed(3);c.st={rm:true,ic:true,mu:true};c.rev=true;renderCalc();
+}
+function meanExact(key){const a=S.rows.filter(r=>r.key===key).map(r=>exact(r).mu);return a.reduce((s,v)=>s+v,0)/a.length;}
+function renderMeans(){
+  const g=groupsRows();let t='';
+  Object.keys(g).forEach(k=>{
+    const m=S.mean[k]||(S.mean[k]={v:'',st:null,att:0,rev:false,ok:false});
+    t+='<div class="obsform" style="margin-bottom:8px"><div class="f" style="grid-column:span 2"><span>'+LQ[k].name+' — '+g[k].length+' readings: mean μ</span></div>'+
+      '<label class="f">μ (mean)<input class="n '+(m.st===true?'ok':m.st===false?'no':'')+'" type="number" step="any" data-mean="'+k+'" value="'+m.v+'"></label>'+
+      '<div class="btns" style="margin:0"><button class="b" data-mchk="'+k+'">Check</button>'+(m.att>0&&!m.ok&&!m.rev?'<button class="b" data-mans="'+k+'">Answer</button>':'')+(m.ok?'<span class="good">✓</span>':m.rev?'<span class="warn">(answer viewed)</span>':'')+'</div></div>';
+  });
+  $('meanBox').innerHTML=t||'<div class="note">—</div>';
+  document.querySelectorAll('[data-mean]').forEach(i=>i.oninput=()=>{S.mean[i.dataset.mean].v=i.value;});
+  document.querySelectorAll('[data-mchk]').forEach(b=>b.onclick=()=>{const k=b.dataset.mchk,m=S.mean[k];m.att++;m.st=Math.abs(parseFloat(m.v)-meanExact(k))<=0.006;m.ok=m.st;renderMeans();gateGraph();});
+  document.querySelectorAll('[data-mans]').forEach(b=>b.onclick=()=>{const k=b.dataset.mans,m=S.mean[k];m.v=meanExact(k).toFixed(3);m.st=true;m.rev=true;renderMeans();gateGraph();});
+}
+function gateGraph(){
+  const keys=Object.keys(groupsRows());
+  const okRows=S.rows.length>0&&S.rows.every(r=>{const c=S.calc[r.id];return c&&(c.ok||c.rev);});
+  const okMeans=keys.length>0&&keys.every(k=>{const m=S.mean[k];return m&&(m.ok||m.rev);});
+  $('bToGraph').disabled=!(okRows&&okMeans);
+  $('graphNote').textContent=okRows&&okMeans?'Calculations complete — draw the graph.':'First check all rows and the mean μ of every liquid.';
+}
+$('bToGraph').onclick=()=>{unlock(4);go(4);};
+
+/* ---------- stage 4 : graph (student chooses scale, plots, draws line, slope) ---------- */
+const NX=14,NY=12,SXO=[0.2,0.25,0.5,1,2],SYO=[0.5,1,2,2.5,5];
+$('gSX').innerHTML+=SXO.map(v=>'<option value="'+v+'">'+v+' cm</option>').join('');
+$('gSY').innerHTML+=SYO.map(v=>'<option value="'+v+'">'+v+' cm</option>').join('');
+const GP={ml:50,mt:14,q:20};
+function gliqs(){const g=groupsRows();return Object.keys(g).filter(k=>g[k].length>=3);}
+function gdata(k){return S.rows.filter(r=>r.key===k).map(r=>({h:r.h,R:(r.r1+r.r2)/2})).sort((a,b)=>a.h-b.h);}
+function curG(){
+  const k=S.cur;if(!k)return null;
+  return S.G[k]||(S.G[k]={x:'',y:'',sx:0,sy:0,ready:false,pts:[],line:null,lmode:0,tmp:null,slOK:false,muOK:false,done:false,img:'',sl:null});
+}
+function renderGraphStage(){
+  const ks=gliqs();
+  if(!ks.length){$('gLiq').innerHTML='';$('msgG').innerHTML='<span class="warn">You need at least 3 readings of one liquid for the graph — go back to the lab.</span>';drawGraph();return;}
+  if(!ks.includes(S.cur))S.cur=ks[0];
+  $('gLiq').innerHTML=ks.map(k=>'<option value="'+k+'"'+(k===S.cur?' selected':'')+'>'+LQ[k].name+(S.G[k]&&S.G[k].done?' ✓':'')+'</option>').join('');
+  syncGraphUI();
+}
+function syncGraphUI(){
+  const g=curG();if(!g)return;
+  $('gX').value=g.x;$('gY').value=g.y;$('gSX').value=g.sx||'';$('gSY').value=g.sy||'';
+  const d=gdata(S.cur);
+  $('gLine').disabled=!(g.ready&&g.pts.length===d.length&&!g.line);
+  $('gLine').textContent=g.line?'Redraw line':'Draw best-fit line';
+  $('gLine').disabled=!(g.ready&&g.pts.length===d.length);
+  $('slopeCard').hidden=!g.line;
+  $('ptList').innerHTML=g.ready?d.map((p,i)=>'<span class="'+(i<g.pts.length?'done':i===g.pts.length?'cur':'')+'">'+(i+1)+': h='+p.h.toFixed(2)+', R='+p.R.toFixed(2)+'</span>').join(''):'';
+  $('gHelp').textContent=!g.ready?'First choose the axes and scale, then press "Check axes and scale".':g.lmode?'Click two end-points of the best-fit line (one near the origin, the other near the far end of the graph).':g.pts.length<d.length?'Click/tap point '+(g.pts.length+1)+' at its correct position. The origin is the bottom-left corner.':g.line?'Line drawn. Now find the slope and μ below.':'All points plotted. Now press "Draw best-fit line".';
+  $('bToRes').disabled=!Object.values(S.G).some(x=>x.done);
+  $('resNote').textContent=$('bToRes').disabled?'Complete the graph (slope + μ) for at least one liquid.':'Go to the Result (you may also complete the graphs of other liquids).';
+  drawGraph();
+}
+$('gLiq').onchange=e=>{S.cur=e.target.value;$('msgG').textContent='';$('msgS').textContent='';syncGraphUI();};
+['gX','gY','gSX','gSY'].forEach(id=>$(id).onchange=e=>{
+  const g=curG();if(!g)return;
+  if(id==='gX')g.x=e.target.value;if(id==='gY')g.y=e.target.value;if(id==='gSX')g.sx=+e.target.value||0;if(id==='gSY')g.sy=+e.target.value||0;
+  g.ready=false;g.line=null;g.lmode=0;g.slOK=g.muOK=g.done=false;syncGraphUI();
+});
+$('gReady').onclick=()=>{
+  const g=curG();if(!g)return;const d=gdata(S.cur),out=m=>$('msgG').innerHTML=m;
+  if(!g.x||!g.y)return out('Select the variable for the X-axis and the Y-axis.');
+  if(g.x!=='h'||g.y!=='R'){
+    return out(g.x==='R'&&g.y==='h'?'<span class="bad">✗ The axes are interchanged.</span> The quantity you change yourself (the independent variable) goes on the x-axis — you vary h and measure R. So x = h, y = R.':'<span class="bad">✗ This experiment\'s graph is R vs h</span> (x-axis: h, y-axis: R) — R = 2h·tan i<sub>c</sub> depends directly on h.');
+  }
+  if(!g.sx||!g.sy)return out('Select the scale of both axes.');
+  const hx=Math.max(...d.map(p=>p.h)),hy=Math.max(...d.map(p=>p.R)),fx=hx/(NX*g.sx),fy=hy/(NY*g.sy);
+  if(fx>1)return out('<span class="bad">✗ The X-axis scale is too small</span> — h = '+hx.toFixed(2)+' cm falls outside the graph paper (0 to '+(NX*g.sx)+' cm). Choose a smaller number of cm per box.');
+  if(fy>1)return out('<span class="bad">✗ The Y-axis scale is too small</span> — R = '+hy.toFixed(2)+' cm falls outside the paper (0 to '+(NY*g.sy)+' cm). Choose a larger number of cm per box.');
+  g.ready=true;g.pts=[];g.line=null;g.lmode=0;g.slOK=g.muOK=g.done=false;
+  const warn=[];if(fx<.5)warn.push('less than half of the x-axis of the graph paper will be used — a smaller cm/box scale would be better');if(fy<.5)warn.push('less than half of the y-axis of the paper will be used — a smaller cm/box scale would be better');
+  out('<span class="good">✓ The axes are correct and all points will fit on the paper.</span>'+(warn.length?' <span class="warn">Suggestion: '+warn.join('; ')+'.</span>':' Good scale (good use of the paper).')+' Now plot the points.');
+  syncGraphUI();
+};
+const cvG=$('cvG');
+const gXp=(g,x)=>GP.ml+x/g.sx*GP.q,gYp=(g,y)=>GP.mt+NY*GP.q-y/g.sy*GP.q;
+function drawGraph(){
+  const w0=cvG.parentElement.clientWidth||340,q=Math.max(10,Math.floor((w0-GP.ml-14)/NX*10)/10);GP.q=q;
+  const hh=Math.ceil(NY*q+GP.mt+44),{c,w,h}=setup(cvG,hh),g=curG();
+  c.fillStyle='#fffdf4';c.fillRect(0,0,w,h);
+  const x0=GP.ml,y0=GP.mt+NY*q,x1=x0+NX*q,y1=GP.mt;
+  for(let i=0;i<=NX*10;i++){c.strokeStyle=i%10===0?'rgba(190,70,50,.7)':i%5===0?'rgba(190,70,50,.38)':'rgba(190,70,50,.18)';c.lineWidth=i%10===0?1:.6;c.beginPath();c.moveTo(x0+i*q/10,y1);c.lineTo(x0+i*q/10,y0);c.stroke();}
+  for(let j=0;j<=NY*10;j++){c.strokeStyle=j%10===0?'rgba(190,70,50,.7)':j%5===0?'rgba(190,70,50,.38)':'rgba(190,70,50,.18)';c.lineWidth=j%10===0?1:.6;c.beginPath();c.moveTo(x0,y0-j*q/10);c.lineTo(x1,y0-j*q/10);c.stroke();}
+  c.strokeStyle='#111';c.lineWidth=2;c.beginPath();c.moveTo(x0,y1);c.lineTo(x0,y0);c.lineTo(x1,y0);c.stroke();c.lineWidth=1;
+  c.fillStyle='#111';c.font='11px system-ui';
+  const nm={h:'h (cm)',R:'R (cm)',mu:'μ'};
+  if(g){
+    if(g.sx){c.textAlign='center';for(let k=0;k<=NX;k+=2)c.fillText(tr(k*g.sx,3),x0+k*q,y0+14);c.fillText('X: '+(g.x?nm[g.x]:'')+' · 1 box = '+g.sx+' cm',(x0+x1)/2,y0+32);}
+    if(g.sy){c.textAlign='right';for(let k=0;k<=NY;k+=2)c.fillText(tr(k*g.sy,3),x0-6,y0-k*q+4);c.save();c.translate(12,(y0+y1)/2);c.rotate(-Math.PI/2);c.textAlign='center';c.fillText('Y: '+(g.y?nm[g.y]:'')+' · 1 box = '+g.sy+' cm',0,0);c.restore();}
+    if(g.ready){
+      if(g.line){
+        const L=g.line,m=(L.y2-L.y1)/(L.x2-L.x1),xa=0,xb=NX*g.sx;let ya=L.y1+m*(xa-L.x1),yb=L.y1+m*(xb-L.x1);
+        const ymax=NY*g.sy;let xe=xb;if(yb>ymax){xe=L.x1+(ymax-L.y1)/m;yb=ymax;}
+        c.strokeStyle='#1d4ed8';c.lineWidth=1.6;c.beginPath();c.moveTo(gXp(g,xa),gYp(g,ya));c.lineTo(gXp(g,xe),gYp(g,yb));c.stroke();c.lineWidth=1;
+      }
+      g.pts.forEach(p=>{const X=gXp(g,p.x),Y=gYp(g,p.y);c.strokeStyle='#b91c1c';c.lineWidth=1.8;c.beginPath();c.moveTo(X-5,Y-5);c.lineTo(X+5,Y+5);c.moveTo(X+5,Y-5);c.lineTo(X-5,Y+5);c.stroke();c.beginPath();c.arc(X,Y,6,0,7);c.stroke();c.lineWidth=1;});
+      if(g.tmp){c.fillStyle='#1d4ed8';c.beginPath();c.arc(gXp(g,g.tmp.x),gYp(g,g.tmp.y),4,0,7);c.fill();}
+    }
+  }
+  c.fillStyle='#111';c.textAlign='right';c.fillText('0',x0-6,y0+14);
+}
+cvG.addEventListener('pointerup',e=>{
+  const g=curG();if(!g)return;
+  const r=cvG.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;
+  if(!g.ready)return $('msgG').innerHTML='First choose the axes and scale, then press "Check axes and scale".';
+  const dx=(px-GP.ml)/GP.q*g.sx,dy=(GP.mt+NY*GP.q-py)/GP.q*g.sy;
+  if(px<GP.ml-2||px>GP.ml+NX*GP.q+2||py<GP.mt-2||py>GP.mt+NY*GP.q+2)return;
+  const d=gdata(S.cur);
+  if(g.lmode){
+    if(!g.tmp){g.tmp={x:dx,y:dy};$('msgG').textContent='First point placed. Now click the second point (far from the first).';drawGraph();return;}
+    const a=g.tmp,b={x:dx,y:dy};g.tmp=null;
+    const ok=checkLine(g,d,{x1:a.x,y1:a.y,x2:b.x,y2:b.y});
+    if(ok){g.line={x1:a.x,y1:a.y,x2:b.x,y2:b.y};g.lmode=0;g.slOK=g.muOK=g.done=false;}
+    syncGraphUI();return;
+  }
+  if(g.pts.length>=d.length)return;
+  const p=d[g.pts.length],ex=gXp(g,p.h),ey=gYp(g,p.R),dist=Math.hypot(px-ex,py-ey)/GP.q;
+  if(dist<=0.33){g.pts.push({x:dx,y:dy});$('msgG').innerHTML='<span class="good">✓ Point '+g.pts.length+' plotted.</span>';syncGraphUI();}
+  else{
+    const hx=Math.abs(px-ex)/GP.q>.33,hy=Math.abs(py-ey)/GP.q>.33;
+    $('msgG').innerHTML='<span class="bad">✗ Not here.</span> Point (h = '+p.h.toFixed(2)+', R = '+p.R.toFixed(2)+') — check the '+(hx&&hy?'both x and y position':hx?'x-position (h)':'y-position (R)')+' — check again. Remember the scale: x: 1 box = '+g.sx+' cm, y: 1 box = '+g.sy+' cm.';
+  }
+});
+function lsSlope(d){let sxy=0,sxx=0;d.forEach(p=>{sxy+=p.h*p.R;sxx+=p.h*p.h;});return sxy/sxx;}
+function checkLine(g,d,L){
+  const out=m=>{$('msgG').innerHTML=m;return false;};
+  const hx=Math.max(...d.map(p=>p.h));
+  if(Math.abs(L.x2-L.x1)<0.4*hx)return out('<span class="bad">✗ The two points are too close.</span> Take the end-points far apart (across most of the graph) and try again.');
+  const m=(L.y2-L.y1)/(L.x2-L.x1),ls=lsSlope(d),b=L.y1-m*L.x1;
+  if(Math.abs(b)>0.06*NY*g.sy)return out('<span class="bad">✗ The line does not pass through the origin.</span> The graph of R = 2h·tan i<sub>c</sub> passes through the origin (R = 0 at h = 0). Draw it again.');
+  if(Math.abs(m-ls)/ls>0.08)return out('<span class="bad">✗ The line is not a best fit through the points</span> (the points should lie roughly equally above and below it). Draw it again.');
+  $('msgG').innerHTML='<span class="good">✓ The line is good.</span> Now read two widely separated points on the line below and find the slope and μ.';return true;
+}
+$('gUndo').onclick=()=>{const g=curG();if(!g)return;g.pts.pop();g.line=null;g.lmode=0;g.tmp=null;g.slOK=g.muOK=g.done=false;syncGraphUI();};
+$('gClear').onclick=()=>{const g=curG();if(!g)return;g.pts=[];g.line=null;g.lmode=0;g.tmp=null;g.slOK=g.muOK=g.done=false;syncGraphUI();};
+$('gLine').onclick=()=>{const g=curG();if(!g)return;g.lmode=1;g.tmp=null;g.line=null;g.slOK=g.muOK=g.done=false;$('msgG').textContent='Click the two end-points of the line.';syncGraphUI();};
+$('bSlope').onclick=()=>{
+  const g=curG(),out=m=>$('msgS').innerHTML=m;if(!g||!g.line)return;
+  const v=['sx1','sy1','sx2','sy2','sSl','sMu'].map(i=>parseFloat($(i).value));
+  if(v.some(isNaN))return out('Fill in all the boxes.');
+  const[x1,y1,x2,y2,sl,mu]=v,L=g.line,m=(L.y2-L.y1)/(L.x2-L.x1),d=gdata(S.cur),hx=Math.max(...d.map(p=>p.h));
+  const onLine=(x,y)=>Math.abs(y-(L.y1+m*(x-L.x1)))<=0.3*g.sy;
+  if(!onLine(x1,y1)||!onLine(x2,y2))return out('<span class="bad">✗ These points are not on the line you drew.</span> Read them from the line on the graph (do not use data points).');
+  if(Math.abs(x2-x1)<0.5*hx)return out('<span class="bad">✗ The points are too close.</span> Take widely separated points on the line for the slope (at least half the h-range apart).');
+  if(Math.abs(sl-(y2-y1)/(x2-x1))>0.015*Math.abs((y2-y1)/(x2-x1)))return out('<span class="bad">✗ Slope is wrong.</span> Slope = (y₂ − y₁)/(x₂ − x₁).');
+  if(Math.abs(mu-1/Math.sin(Math.atan(sl/2)))>0.008)return out('<span class="bad">✗ μ is wrong.</span> Slope = R/h = 2 tan i<sub>c</sub> ⇒ i<sub>c</sub> = tan⁻¹(slope/2), μ = 1/sin i<sub>c</sub>.');
+  g.slOK=g.muOK=true;g.done=true;g.sl={x1,y1,x2,y2,slope:sl,mu};drawGraph();g.img=cvG.toDataURL('image/png');
+  out('<span class="good">✓ Slope = '+sl.toFixed(3)+', μ (graph) = '+mu.toFixed(3)+'.</span> μ from calculation = '+meanExact(S.cur).toFixed(3)+'.');
+  unlock(5);renderGraphStage();
+};
+$('bToRes').onclick=()=>{unlock(5);go(5);};
+$('bToResult').onclick=()=>{unlock(6);go(6);};
+
+/* ---------- stage 5 : result, viva, report ---------- */
+function graphMu(k){return S.G[k]&&S.G[k].done?S.G[k].sl.mu:null;}
+function sdMu(k){const a=S.rows.filter(r=>r.key===k).map(r=>exact(r).mu),m=a.reduce((s,v)=>s+v,0)/a.length;return a.length>1?Math.sqrt(a.reduce((s,v)=>s+(v-m)*(v-m),0)/(a.length-1)):0;}
+
+/* ---------- stage 5 : error analysis ---------- */
+const ERR_DH=0.01;
+const drNow=()=>{const v=parseFloat(S.err.dr);return S.err.lcOK&&v>0?v:0.05;};
+const muOfS=s=>Math.sqrt(1+4/(s*s));
+function dmuRow(r){const e=exact(r);return((e.mu*e.mu-1)/e.mu)*Math.sqrt(Math.pow(ERR_DH/r.h,2)+Math.pow(drNow()/e.Rm,2));}
+function dmuMean(k){const a=S.rows.filter(r=>r.key===k).map(dmuRow);return a.reduce((s,v)=>s+v,0)/a.length;}
+function grRef(k){const d=gdata(k),dr=drNow();return{smax:Math.min(...d.map(p=>(p.R+dr)/p.h)),smin:Math.max(...d.map(p=>(p.R-dr)/p.h))};}
+const objOf=(g,k)=>g==='row'?S.err.rows[k]:g==='liq'?S.err.liq[k]:S.err.gr[k];
+function ecell(g,k,f,o,dis){const st=o.st&&o.st[f];return '<input class="n '+(st===true?'ok':st===false?'no':'')+'" type="number" step="any" data-g="'+g+'" data-k="'+k+'" data-f="'+f+'" value="'+(o[f]===undefined?'':o[f])+'"'+(dis?' disabled':'')+'>';}
+function liqSpec(k){
+  const m=meanExact(k),sd=sdMu(k),dm=dmuMean(k);
+  return{mean:[dm,Math.max(.08*dm,.0004),4],sd:[sd,Math.max(.05*sd,.0006),4],pct:[dm/m*100,Math.max(.08*dm/m*100,.03),2]};
+}
+function grSpec(k,o){
+  const r=grRef(k),sm=parseFloat(o.smax),sn=parseFloat(o.smin),ma=parseFloat(o.mmax),mi=parseFloat(o.mmin);
+  return{smax:[r.smax,.008,3],smin:[r.smin,.008,3],mmax:[muOfS(sm),.003,4],mmin:[muOfS(sn),.003,4],dmu:[Math.abs(mi-ma)/2,.0006,4]};
+}
+function chkSpec(o,spec){
+  o.st={};let ok=true;
+  Object.keys(spec).forEach(f=>{const v=parseFloat(o[f]),[ex,tol]=spec[f];const good=!isNaN(v)&&!isNaN(ex)&&Math.abs(v-ex)<=tol;o.st[f]=good;if(!good)ok=false;});
+  o.att=(o.att||0)+1;o.ok=ok;
+}
+function renderErr(){
+  const E=S.err;$('eDh').value=E.dh;$('eDR').value=E.dr;
+  /* B : rows */
+  if(!S.rows.length){$('errTab').innerHTML='<div class="note">Take readings first.</div>';}
+  else{
+    let t='<table><tr><th>#</th><th class="l">Liquid</th><th>h (cm)</th><th>R (cm)</th><th>μ</th><th>Δμ</th><th></th></tr>';
+    S.rows.forEach((r,i)=>{
+      const o=E.rows[r.id]||(E.rows[r.id]={v:'',st:{},att:0,rev:false,ok:false}),e=exact(r);
+      t+='<tr><td>'+(i+1)+'</td><td class="l">'+LQ[r.key].name+'</td><td>'+r.h.toFixed(2)+'</td><td>'+e.Rm.toFixed(2)+'</td><td>'+e.mu.toFixed(3)+'</td><td>'+ecell('row',r.id,'v',o,!E.lcOK)+'</td><td><button class="b" data-ec="row:'+r.id+'"'+(E.lcOK?'':' disabled')+'>Check</button> '+(o.att>0&&!o.ok&&!o.rev?'<button class="b" data-ea="row:'+r.id+'">Answer</button>':'')+(o.ok?'<span class="good">✓</span>':o.rev?'<span class="warn">(answer viewed)</span>':'')+'</td></tr>';
+    });
+    $('errTab').innerHTML=t+'</table>'+(E.lcOK?'':'<div class="note">Complete part A first.</div>');
+  }
+  /* C : liquids */
+  const g=groupsRows(),ks=Object.keys(g);let c='';
+  ks.forEach(k=>{
+    const o=E.liq[k]||(E.liq[k]={mean:'',sd:'',pct:'',st:{},att:0,rev:false,ok:false}),rowsOK=g[k].every(r=>{const x=E.rows[r.id];return x&&(x.ok||x.rev);}),dis=!rowsOK;
+    c+='<div style="margin:10px 0"><b>'+LQ[k].name+'</b> — '+g[k].length+' readings, μ̄ = '+meanExact(k).toFixed(3)+(dis?' <span class="note">(finish part B for this liquid first)</span>':'')+
+      '<div class="obsform" style="margin-top:6px"><label class="f"><span>Mean Δμ</span><input class="n '+(o.st.mean===true?'ok':o.st.mean===false?'no':'')+'" type="number" step="any" data-g="liq" data-k="'+k+'" data-f="mean" value="'+o.mean+'"'+(dis?' disabled':'')+'></label>'+
+      '<label class="f"><span>SD of μ</span>'+ecell('liq',k,'sd',o,dis)+'</label><label class="f"><span>% uncertainty</span>'+ecell('liq',k,'pct',o,dis)+'</label>'+
+      '<div class="btns" style="margin:0"><button class="b" data-ec="liq:'+k+'"'+(dis?' disabled':'')+'>Check</button>'+(o.att>0&&!o.ok&&!o.rev?'<button class="b" data-ea="liq:'+k+'">Answer</button>':'')+(o.ok?'<span class="good">✓</span>':o.rev?'<span class="warn">(answer viewed)</span>':'')+'</div></div></div>';
+  });
+  $('errMean').innerHTML=c||'<div class="note">—</div>';
+  /* D : graph */
+  const gk=ks.filter(k=>S.G[k]&&S.G[k].done);let d='';
+  gk.forEach(k=>{
+    const o=E.gr[k]||(E.gr[k]={smax:'',smin:'',mmax:'',mmin:'',dmu:'',st:{},att:0,rev:false,ok:false}),dis=!E.lcOK;
+    d+='<div style="margin:10px 0"><b>'+LQ[k].name+'</b> — slope from your graph = '+S.G[k].sl.slope.toFixed(3)+', μ(graph) = '+S.G[k].sl.mu.toFixed(3)+
+      '<div class="obsform" style="margin-top:6px"><label class="f"><span>S<sub>max</sub></span>'+ecell('gr',k,'smax',o,dis)+'</label><label class="f"><span>S<sub>min</sub></span>'+ecell('gr',k,'smin',o,dis)+'</label><label class="f"><span>μ(S<sub>max</sub>)</span>'+ecell('gr',k,'mmax',o,dis)+'</label><label class="f"><span>μ(S<sub>min</sub>)</span>'+ecell('gr',k,'mmin',o,dis)+'</label><label class="f"><span>Δμ<sub>graph</sub></span>'+ecell('gr',k,'dmu',o,dis)+'</label>'+
+      '<div class="btns" style="margin:0"><button class="b" data-ec="gr:'+k+'"'+(dis?' disabled':'')+'>Check</button>'+(o.att>0&&!o.ok&&!o.rev?'<button class="b" data-ea="gr:'+k+'">Answer</button>':'')+(o.ok?'<span class="good">✓</span>':o.rev?'<span class="warn">(answer viewed)</span>':'')+'</div></div></div>';
+  });
+  $('errGraph').innerHTML=d||'<div class="note">No graph has been completed yet — go back to the Graph step and finish the slope for at least one liquid.</div>';
+  document.querySelectorAll('[data-g]').forEach(i=>i.oninput=()=>{objOf(i.dataset.g,i.dataset.k)[i.dataset.f]=i.value;});
+  document.querySelectorAll('[data-ec]').forEach(b=>b.onclick=()=>{const[g2,k]=b.dataset.ec.split(':'),o=objOf(g2,k);
+    if(g2==='row'){const r=S.rows.find(x=>x.id===+k),ex=dmuRow(r),v=parseFloat(o.v);o.st={v:!isNaN(v)&&Math.abs(v-ex)<=Math.max(.08*ex,.0004)};o.att++;o.ok=o.st.v;}
+    else if(g2==='liq')chkSpec(o,liqSpec(k));else chkSpec(o,grSpec(k,o));
+    renderErr();});
+  document.querySelectorAll('[data-ea]').forEach(b=>b.onclick=()=>{const[g2,k]=b.dataset.ea.split(':'),o=objOf(g2,k);
+    if(g2==='row'){o.v=dmuRow(S.rows.find(x=>x.id===+k)).toFixed(4);o.st={v:true};}
+    else if(g2==='liq'){const sp=liqSpec(k);Object.keys(sp).forEach(f=>o[f]=sp[f][0].toFixed(sp[f][2]));o.st={mean:true,sd:true,pct:true};}
+    else{const r=grRef(k);o.smax=r.smax.toFixed(3);o.smin=r.smin.toFixed(3);o.mmax=muOfS(+o.smax).toFixed(4);o.mmin=muOfS(+o.smin).toFixed(4);o.dmu=(Math.abs(+o.mmin-+o.mmax)/2).toFixed(4);o.st={smax:true,smin:true,mmax:true,mmin:true,dmu:true};}
+    o.rev=true;renderErr();});
+  gateErr();
+}
+$('eDh').oninput=e=>{S.err.dh=e.target.value;};$('eDR').oninput=e=>{S.err.dr=e.target.value;};
+$('bLC').onclick=()=>{
+  const dh=parseFloat($('eDh').value),dr=parseFloat($('eDR').value),out=m=>$('msgLC').innerHTML=m;
+  S.err.dh=$('eDh').value;S.err.dr=$('eDR').value;
+  if(isNaN(dh)||isNaN(dr))return out('Enter both Δh and ΔR.');
+  if(Math.abs(dh-0.01)>0.0005){S.err.lcOK=false;return out('<span class="bad">✗ Δh is wrong.</span> It is the least count of the vernier: 1 MSD − 1 VSD = 0.01 cm.');}
+  if(dr<0.02||dr>0.1){S.err.lcOK=false;return out('<span class="bad">✗ ΔR is not realistic.</span> The grid division is 0.1 cm (1 mm). You can estimate the edge to a fraction of a division, but not better than about 0.02 cm nor worse than a full division (0.1 cm).');}
+  S.err.lcOK=true;out('<span class="good">✓ Δh = '+dh+' cm, ΔR = '+dr+' cm.</span> These will be used in all the uncertainty calculations below.');
+  S.err.rows={};S.err.liq={};S.err.gr={};renderErr();
+};
+function gateErr(){
+  const E=S.err,g=groupsRows(),ks=Object.keys(g);
+  const okRows=S.rows.length>0&&S.rows.every(r=>E.rows[r.id]&&(E.rows[r.id].ok||E.rows[r.id].rev));
+  const okLiq=ks.length>0&&ks.every(k=>E.liq[k]&&(E.liq[k].ok||E.liq[k].rev));
+  const gk=ks.filter(k=>S.G[k]&&S.G[k].done),okGr=gk.length>0&&gk.every(k=>E.gr[k]&&(E.gr[k].ok||E.gr[k].rev));
+  const ok=E.lcOK&&okRows&&okLiq&&okGr;$('bToResult').disabled=!ok;
+  $('errNote').textContent=ok?'Error analysis complete.':'Complete parts A–D (D needs at least one finished graph).';
+}
+
+/* ---------- stage 6 : result ---------- */
+const pm=(v,d,u)=>v.toFixed(d)+' ± '+u.toFixed(d);
+function renderResult(){
+  const g=groupsRows(),ks=Object.keys(g),E=S.err;
+  let t='<table><tr><th class="l">Liquid</th><th>n</th><th>μ (calculation) = μ̄ ± Δμ̄</th><th>% unc.</th><th>SD</th><th>μ (graph) ± Δμ</th>'+(S.reveal?'<th>Actual μ</th><th>Deviation</th><th>Within uncertainty?</th><th>Literature</th>':'')+'</tr>';
+  ks.forEach(k=>{
+    const m=meanExact(k),dm=dmuMean(k),gm=graphMu(k),go=E.gr[k],gd=gm!==null&&go&&(go.ok||go.rev)?Math.abs(parseFloat(go.mmin)-parseFloat(go.mmax))/2:null,act=g[k].reduce((s,r)=>s+r.nTrue,0)/g[k].length,dev=Math.abs(m-act);
+    t+='<tr><td class="l">'+LQ[k].name+'</td><td>'+g[k].length+'</td><td><b class="good">'+pm(m,3,dm)+'</b></td><td>'+(dm/m*100).toFixed(2)+' %</td><td>'+sdMu(k).toFixed(3)+'</td><td>'+(gm!==null?(gd!==null?pm(gm,3,gd):gm.toFixed(3)):'—')+'</td>'+(S.reveal?'<td>'+act.toFixed(3)+'</td><td>'+dev.toFixed(3)+' ('+(dev/act*100).toFixed(2)+' %)</td><td>'+(dev<=dm?'<span class="good">yes ✓</span>':dev<=2*dm?'<span class="warn">within 2Δμ̄</span>':'<span class="bad">no</span>')+'</td><td>'+LQ[k].n.toFixed(3)+'</td>':'')+'</tr>';
+  });
+  $('resBox').innerHTML=t+'</table>';
+  $('revNote').textContent=S.reveal?'Actual μ is the true value hidden in the simulator (including the effect of any contamination). A good measurement agrees with it within your quoted uncertainty. If it does not, think about systematic errors: beam off the hole, contamination, reading the edge of the dark circle consistently too large or too small.':'';
+  if(!$('viva').innerHTML)renderViva();
+}
+$('bReveal').onclick=()=>{S.reveal=true;renderResult();};
+const VIVA=[
+ ['Why does the region outside the dark circle look bright?','Rays with incidence angle greater than i_c undergo total internal reflection at the surface and return to the bottom, so that region receives extra light.'],
+ ['Why is a white porcelain (scattering) bottom needed?','Light from the laser spot must scatter in all directions so that rays at all angles reach the surface; a shiny (mirror-like) bottom would send the light in only one direction.'],
+ ['For a liquid of higher refractive index at the same h, will the dark circle be larger or smaller?','Smaller. Higher μ ⇒ smaller i_c ⇒ smaller R = 2h tan i_c.'],
+ ['Which of Δh and ΔR contributes more to the uncertainty in μ for a small h, and why?','At small h the relative error Δh/h is larger, but ΔR/R is usually the bigger term because the edge of the dark circle is diffuse (ΔR ≈ 0.05 cm) compared with the vernier least count (0.01 cm). Taking readings at larger h reduces both relative errors.'],
+ ['Why is the graph of R vs h a straight line through the origin?','R = 2h tan i_c, i.e. R ∝ h and R = 0 at h = 0. Slope = 2 tan i_c.'],
+ ['What are the main sources of error in this experiment?','Uncertainty in reading the (diffuse) edge of the dark circle, ±0.01 cm in h from the vernier, the beam being slightly off the hole, liquid contamination, and the container bottom not being perfectly flat.']
+];
+function renderViva(){
+  $('viva').innerHTML=VIVA.map((v,i)=>'<details style="margin:6px 0"><summary>'+(i+1)+'. '+esc(v[0])+'</summary><div class="rd">'+esc(v[1])+'</div></details>').join('');
+}
+function csvRows(){
+  let s='No,Liquid,MSR_mm,VSD,h_cm,R1_cm,R2_cm,R_cm,ic_deg,mu\n';
+  S.rows.forEach((r,i)=>{const e=exact(r);s+=[i+1,'"'+LQ[r.key].name+'"',r.msr,r.vsd,r.h.toFixed(2),r.r1.toFixed(2),r.r2.toFixed(2),e.Rm.toFixed(2),e.ic.toFixed(2),e.mu.toFixed(3)].join(',')+'\n';});
+  return s;
+}
+$('bCsv').onclick=()=>{
+  if(!S.rows.length)return;
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csvRows()],{type:'text/csv'}));a.download='refractive_index_readings.csv';document.body.appendChild(a);a.click();a.remove();
+};
+function buildReport(){
+  const g=groupsRows(),ks=Object.keys(g);
+  let h='<div class="rep"><h1>Measurement of Refractive Index of a Liquid using LASER</h1><div style="text-align:center">(LASER board method)</div>'+
+   '<p><b>Name:</b> '+esc(S.name)+(S.cls?' &nbsp;·&nbsp; '+esc(S.cls):'')+' &nbsp;&nbsp; <b>Date:</b> '+esc(S.date)+'</p>'+
+   '<h2>Aim</h2><p>To determine the refractive index of the given liquid using the LASER board method.</p>'+
+   '<h2>Apparatus</h2><p>LASER board (porcelain container), He-Ne LASER, vernier callipers, given liquid.</p>'+
+   '<h2>Formula</h2><p>i<sub>c</sub> = tan⁻¹(R / 2h) = tan⁻¹(D / 4h) &nbsp;;&nbsp; μ = 1 / sin i<sub>c</sub> &nbsp;;&nbsp; h = MSR + VSD × L.C. (L.C. = 0.01 cm)</p>'+
+   '<h2>Observations and Calculations</h2><table style="width:100%;border-collapse:collapse"><tr><th>S.No.</th><th>Liquid</th><th>MSR (mm)</th><th>VSD</th><th>h (cm)</th><th>R₁ (cm)</th><th>R₂ (cm)</th><th>R (cm)</th><th>i<sub>c</sub> (°)</th><th>μ</th></tr>';
+  S.rows.forEach((r,i)=>{const e=exact(r);h+='<tr><td>'+(i+1)+'</td><td>'+LQ[r.key].name+'</td><td>'+r.msr+'</td><td>'+r.vsd+'</td><td>'+r.h.toFixed(2)+'</td><td>'+r.r1.toFixed(2)+'</td><td>'+r.r2.toFixed(2)+'</td><td>'+e.Rm.toFixed(2)+'</td><td>'+e.ic.toFixed(2)+'</td><td>'+e.mu.toFixed(3)+'</td></tr>';});
+  h+='</table>';
+  ks.forEach(k=>{
+    const gg=S.G[k];
+    if(gg&&gg.done)h+='<h2>Graph — '+LQ[k].name+' (R vs h)</h2><img src="'+gg.img+'" alt="graph"><p>Scale: x-axis 1 big box = '+gg.sx+' cm, y-axis 1 big box = '+gg.sy+' cm. Points on line: ('+gg.sl.x1.toFixed(2)+', '+gg.sl.y1.toFixed(2)+') and ('+gg.sl.x2.toFixed(2)+', '+gg.sl.y2.toFixed(2)+'). Slope = '+gg.sl.slope.toFixed(3)+' = 2 tan i<sub>c</sub> ⇒ μ = '+gg.sl.mu.toFixed(3)+'.</p>';
+  });
+  h+='<h2>Error analysis</h2><p>Δh = '+ERR_DH+' cm (vernier least count); ΔR = '+drNow()+' cm (uncertainty in reading R). &nbsp; Δμ = ((μ² − 1)/μ)·√[(Δh/h)² + (ΔR/R)²]</p><table style="width:100%;border-collapse:collapse"><tr><th>S.No.</th><th>Liquid</th><th>h (cm)</th><th>R (cm)</th><th>μ</th><th>Δμ</th></tr>';
+  S.rows.forEach((r,i)=>{const e=exact(r);h+='<tr><td>'+(i+1)+'</td><td>'+LQ[r.key].name+'</td><td>'+r.h.toFixed(2)+'</td><td>'+e.Rm.toFixed(2)+'</td><td>'+e.mu.toFixed(3)+'</td><td>'+dmuRow(r).toFixed(4)+'</td></tr>';});
+  h+='</table>';
+  ks.forEach(k=>{const go=S.err.gr[k];if(go&&(go.ok||go.rev))h+='<p><b>'+LQ[k].name+' (graph):</b> S<sub>max</sub> = '+parseFloat(go.smax).toFixed(3)+', S<sub>min</sub> = '+parseFloat(go.smin).toFixed(3)+' ⇒ μ(S<sub>max</sub>) = '+parseFloat(go.mmax).toFixed(3)+', μ(S<sub>min</sub>) = '+parseFloat(go.mmin).toFixed(3)+' ⇒ Δμ<sub>graph</sub> = '+parseFloat(go.dmu).toFixed(4)+'.</p>';});
+  h+='<h2>Result</h2><table style="width:100%;border-collapse:collapse"><tr><th>Liquid</th><th>Readings</th><th>μ (calculation) = μ̄ ± Δμ̄</th><th>% uncertainty</th><th>SD</th><th>μ (graph)</th></tr>';
+  ks.forEach(k=>{const gm=graphMu(k),go=S.err.gr[k],gd=gm!==null&&go&&(go.ok||go.rev)?Math.abs(parseFloat(go.mmin)-parseFloat(go.mmax))/2:null,m=meanExact(k),dm=dmuMean(k);h+='<tr><td>'+LQ[k].name+'</td><td>'+g[k].length+'</td><td><b>'+m.toFixed(3)+' ± '+dm.toFixed(3)+'</b></td><td>'+(dm/m*100).toFixed(2)+' %</td><td>'+sdMu(k).toFixed(3)+'</td><td>'+(gm!==null?gm.toFixed(3)+(gd!==null?' ± '+gd.toFixed(3):''):'—')+'</td></tr>';});
+  h+='</table><h2>Conclusion</h2><p>'+(esc($('concl').value).replace(/\n/g,'<br>')||'—')+'</p>'+
+     '<h2>Precautions</h2><p>The LASER beam was not pointed towards the eyes; the container was cleaned before changing the liquid; the beam was kept on the hole; vernier and graph-paper readings were taken carefully.</p></div>';
+  return h;
+}
+const REPCSS='body{margin:0;background:#eee}.bar{padding:10px;text-align:center;background:#222}.bar button{font-size:15px;padding:8px 16px;cursor:pointer}.rep{max-width:820px;margin:0 auto;background:#fff;color:#111;padding:22px;font-family:Georgia,serif;font-size:13px;line-height:1.45}.rep h1{font-size:19px;text-align:center;margin:0 0 4px}.rep h2{font-size:14px;margin:14px 0 4px;border-bottom:1px solid #999;break-after:avoid}.rep img,.rep table{break-inside:avoid}.rep table{font-size:11.5px;border-collapse:collapse;width:100%}.rep th,.rep td{border:1px solid #888;padding:3px 6px;text-align:center}.rep img{max-width:100%;border:1px solid #888;margin:6px 0}@media print{.bar{display:none}body{background:#fff}}';
+function reportDoc(){return '<!doctype html><html><head><meta charset="utf-8"><title>Refractive Index Report - '+esc(S.name)+'</title><style>'+REPCSS+'</style></head><body><div class="bar"><button onclick="window.print()">Print / Save as PDF</button></div>'+buildReport()+'</body></html>';}
+$('bPrint').onclick=()=>{
+  $('report').innerHTML=buildReport();
+  try{window.print();}catch(_){}
+  $('prNote').innerHTML='If nothing opened (some previews block printing), use <b>Download report (HTML)</b>, open that file in your browser and press its Print button.';
+};
+$('bRepHtml').onclick=()=>{
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([reportDoc()],{type:'text/html'}));
+  a.download='Refractive_Index_Report_'+(S.name||'student').replace(/[^A-Za-z0-9]+/g,'_')+'.html';document.body.appendChild(a);a.click();a.remove();
+};
+
+/* ---------- init ---------- */
+buildSteps();chkStart();gateLab();
+window.addEventListener('beforeunload',e=>{if(S.stage>0&&S.rows.length){e.preventDefault();e.returnValue='';}});
+renderLab();
+
+</script>
+</body></html>
